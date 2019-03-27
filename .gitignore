@@ -1,0 +1,41 @@
+# Unity
+[Bb]uild/
+[Bb]uilds/
+[Oo]bj/
+[Tt]emp/
+[Ll]ibrary/
+[Uu]nityCache/
+/Assets/AssetStoreTools*
+*.pidb.meta
+*.bak.meta
+sysinfo.txt
+
+# Visual Studio
+ExportedObj/
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.vs
+
+# Vim
+*.sw?
+\.*.sw?
+
+#Xcode
+xcuserdata
+*.pbxuser
+libiPhone-lib.a
+
+# Mac
+.DS_Store
+
+# Nintendo
+SwitchIL2CPPCache/
+SwitchIL2CPPStats/
