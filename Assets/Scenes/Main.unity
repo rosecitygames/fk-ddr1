@@ -4956,4 +4956,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sourceSpriteRenderer: {fileID: 1317117862}
   particleSystem: {fileID: 1317117861}
-  tileRowItemCount: 64
+  subdivisionCount: 64

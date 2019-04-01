@@ -1,4 +1,4 @@
-﻿Shader "Unlit/TileShader"
+﻿Shader "Sprites/Tile Grid"
 {
     Properties
     {
@@ -53,23 +53,23 @@
             {
 				float2 uv = i.uv.xy;
 
-				float tileRowItemCount = floor(i.uv.z);
-				float tileCount = tileRowItemCount * tileRowItemCount;
+				float subdivisionCount = floor(i.uv.z);
+				float tileCount = subdivisionCount * subdivisionCount;
 
 				float tileIndex = fmod(floor(i.uv.w), tileCount);	
 
-				float2 tileScale = float2(1.0f / tileRowItemCount, 1.0f / tileRowItemCount);
+				float2 tileScale = float2(1.0f / subdivisionCount, 1.0f / subdivisionCount);
 
-				float tileX = fmod(tileIndex, tileRowItemCount);
-				float tileY = floor(tileIndex / tileRowItemCount);
+				float tileX = fmod(tileIndex, subdivisionCount);
+				float tileY = floor(tileIndex / subdivisionCount);
 
-				float offsetX = tileX / tileRowItemCount;
-				float offsetY = tileY / tileRowItemCount;
+				float offsetX = tileX / subdivisionCount;
+				float offsetY = tileY / subdivisionCount;
 
 				float2 tileUV = float2(offsetX, offsetY);
 				
 				float2 textcoord = uv * tileScale + tileUV;
-                // sample the texture
+
                 fixed4 col = tex2D(_MainTex, textcoord);
                 return col;
             }
