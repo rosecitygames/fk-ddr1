@@ -37,16 +37,24 @@ public class ImageParticleGenerator : MonoBehaviour
 
         List<Vector4> customParticleDatas = new List<Vector4>(particleCount);
 
+        Vector3 centerPosition = Vector3.zero;
+
         for (int tileIndex = 0; tileIndex < particleCount; tileIndex++)
         {
             tileX = tileIndex % subdivisionCount;
             tileY = Mathf.FloorToInt((float)tileIndex/ subdivisionCount);
 
-            float positionX = (tileX * particleSize) + offsetX;
-            float positionY = (tileY * particleSize) + offsetY;
+            Vector3 position = new Vector3();
+            position.x = (tileX * particleSize) + offsetX;
+            position.y = (tileY * particleSize) + offsetY;
 
-            emitParams.position = new Vector3(positionX, positionY, 0.0f);
-            emitParams.velocity = new Vector3(Random.Range(0.0f, 0.5f), Random.Range(0.0f, 0.5f));
+            emitParams.position = position;
+
+            Vector3 direction = position - centerPosition;
+            direction.y += Random.Range(1.0f, 3.0f);
+
+            emitParams.velocity = direction * Random.Range(0.5f, 3.0f);// new Vector3(Random.Range(0.0f, 0.5f), Random.Range(0.0f, 0.5f));
+
             particleSystem.Emit(emitParams, 1);
 
             customParticleDatas.Add(new Vector4(subdivisionCount, tileIndex, 0, 0));
