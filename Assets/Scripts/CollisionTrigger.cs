@@ -9,7 +9,7 @@ public class CollisionTrigger : MonoBehaviour
     UnityEvent CollisionEnter;
 
     [SerializeField]
-    ImageParticleGenerator generator;
+    SpriteExploder generator;
 
     private void Start()
     {
