@@ -103,9 +103,7 @@ public class SpriteExploder : MonoBehaviour
             localPosition.x = (tileX * particleSize) + offsetX;
             localPosition.y = (tileY * particleSize) + offsetY;
 
-            Vector3 worldPosition = new Vector3();
-            worldPosition.x = localPosition.x + transform.position.x;
-            worldPosition.y = localPosition.y + transform.position.y;
+            Vector3 worldPosition = transform.rotation * localPosition + transform.position;
 
             emitParams.position = worldPosition;
 

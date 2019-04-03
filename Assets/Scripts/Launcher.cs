@@ -17,6 +17,9 @@ public class Launcher : MonoBehaviour
     float strength = 1;
 
     [SerializeField]
+    float torque;
+
+    [SerializeField]
     UnityEvent OnLaunch;
 
     private void Start()
@@ -36,6 +39,7 @@ public class Launcher : MonoBehaviour
         force *= strength;
 
         rigidbody.AddForce(force, ForceMode2D.Impulse);
+        rigidbody.AddTorque(torque, ForceMode2D.Impulse);
 
         if (OnLaunch != null)
         {
