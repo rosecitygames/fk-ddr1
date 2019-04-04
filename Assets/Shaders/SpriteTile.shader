@@ -2,8 +2,8 @@
 {
     Properties
     {
-		_MainTex("Base (RGB) Trans (A)", 2D) = "white" {}
-		_Color("Color", Color) = (1,1,1,1)
+		[PerRendererData] _MainTex("Sprite Texture", 2D) = "white" {}
+		_Color("Tint", Color) = (1,1,1,1)
     }
     SubShader
     {

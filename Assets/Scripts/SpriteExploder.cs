@@ -99,6 +99,8 @@ public class SpriteExploder : MonoBehaviour
 
             baseAngularVelocity = rigidbody2d.angularVelocity;
         }
+        
+        Vector3 localExplosionCenter = (explosionCenter - transform.position);
 
         for (int tileIndex = 0; tileIndex < particleCount; tileIndex++)
         {
@@ -113,6 +115,7 @@ public class SpriteExploder : MonoBehaviour
             Vector3 worldPosition = localPosition + transform.position;
             emitParams.position = worldPosition;
 
+            /*
             Vector3 angularVelocityOffset = Vector3.zero;
             bool isBaseAngularVelocity = baseAngularVelocity != 0.0f;
             if (isBaseAngularVelocity)
@@ -121,10 +124,11 @@ public class SpriteExploder : MonoBehaviour
                 Vector3 angularVelocityLocalPosition = angularVelocityRotation * localPosition;
                 angularVelocityOffset = angularVelocityLocalPosition - localPosition;
             }
+            */
 
-            Vector3 outwardVelocity = localPosition;// - explosionCenter;
+            Vector3 outwardVelocity = localPosition;// - localExplosionCenter;
             outwardVelocity *= Random.Range(minExplosiveStrength, maxExplosiveStrength);
-            emitParams.velocity = baseVelocity + angularVelocityOffset + outwardVelocity;
+            emitParams.velocity = baseVelocity + outwardVelocity;
             LocalParticleSystem.Emit(emitParams, 1);
 
             customParticleDatas.Add(new Vector4(subdivisionCount, tileIndex, Mathf.Deg2Rad * -transform.eulerAngles.z, 0));
@@ -156,6 +160,7 @@ public class SpriteExploder : MonoBehaviour
         main.playOnAwake = false;
         main.startLifetime = hasLocalParticleSytem ? main.startLifetime : defaultStartLifetime;
         main.startSize = GetParticleSize();
+        main.startColor = LocalSpriteRenderer.color;
         main.maxParticles = GetParticleCount();
         main.simulationSpace = ParticleSystemSimulationSpace.World;
         main.gravityModifier = gravityModifier;
@@ -175,11 +180,16 @@ public class SpriteExploder : MonoBehaviour
         collision.lifetimeLoss = hasLocalParticleSytem ? collision.lifetimeLoss : defaultLifetimeLoss;
 
         ParticleSystemRenderer particleSystemRenderer = GetComponent<ParticleSystemRenderer>();
-        Material material = Resources.Load<Material>(materialResourcePath);
-        particleSystemRenderer.material = material;
         particleSystemRenderer.renderMode = ParticleSystemRenderMode.Billboard;
         particleSystemRenderer.minParticleSize = 0.0f;
         particleSystemRenderer.maxParticleSize = 1.0f;
+
+        Material material = Resources.Load<Material>(materialResourcePath);
+        particleSystemRenderer.material = material;
+
+        MaterialPropertyBlock materialPropertyBlock = new MaterialPropertyBlock();
+        materialPropertyBlock.SetTexture("_MainTex", LocalSpriteRenderer.sprite.texture);
+        particleSystemRenderer.SetPropertyBlock(materialPropertyBlock);
 
         List<ParticleSystemVertexStream> streams = new List<ParticleSystemVertexStream>();
         streams.Add(ParticleSystemVertexStream.Position);
