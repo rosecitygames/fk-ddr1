@@ -20,6 +20,9 @@ public class SpriteExploder : MonoBehaviour
     [SerializeField]
     bool isExplodingOnStart = false;
 
+    [SerializeField]
+    float delaySeconds;
+
     SpriteRenderer localSpriteRenderer;
     SpriteRenderer LocalSpriteRenderer
     {
@@ -52,7 +55,7 @@ public class SpriteExploder : MonoBehaviour
     {
         if (isExplodingOnStart)
         {
-            Explode();
+            Invoke("Explode", delaySeconds);
         }
     }
 
@@ -118,10 +121,10 @@ public class SpriteExploder : MonoBehaviour
                 Vector3 angularVelocityLocalPosition = angularVelocityRotation * localPosition;
                 angularVelocityOffset = angularVelocityLocalPosition - localPosition;
             }
-            
-            Vector3 outwardVelocity = localPosition - explosionCenter;
+
+            Vector3 outwardVelocity = localPosition;// - explosionCenter;
             outwardVelocity *= Random.Range(minExplosiveStrength, maxExplosiveStrength);
-            emitParams.velocity = angularVelocityOffset + outwardVelocity;// baseVelocity + angularVelocityOffset + outwardVelocity;
+            emitParams.velocity = baseVelocity + angularVelocityOffset + outwardVelocity;
             LocalParticleSystem.Emit(emitParams, 1);
 
             customParticleDatas.Add(new Vector4(subdivisionCount, tileIndex, Mathf.Deg2Rad * -transform.eulerAngles.z, 0));
