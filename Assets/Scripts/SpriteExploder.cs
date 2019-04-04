@@ -85,6 +85,7 @@ public class SpriteExploder : MonoBehaviour
         List<Vector4> customParticleDatas = new List<Vector4>(particleCount);
 
         Vector3 baseVelocity = Vector3.zero;
+        float baseAngularVelocity = 0.0f;
 
         Rigidbody2D rigidbody2d = GetComponent<Rigidbody2D>();
         if (rigidbody2d != null)
@@ -92,6 +93,8 @@ public class SpriteExploder : MonoBehaviour
             Vector2 rigidbodyVelocity = rigidbody2d.velocity;
             baseVelocity.x = rigidbodyVelocity.x;
             baseVelocity.y = rigidbodyVelocity.y;
+
+            baseAngularVelocity = rigidbody2d.angularVelocity;
         }
 
         for (int tileIndex = 0; tileIndex < particleCount; tileIndex++)
@@ -102,20 +105,26 @@ public class SpriteExploder : MonoBehaviour
             Vector3 localPosition = new Vector3();
             localPosition.x = (tileX * particleSize) + offsetX;
             localPosition.y = (tileY * particleSize) + offsetY;
+            localPosition = transform.rotation * localPosition;
 
-            Vector3 worldPosition = transform.rotation * localPosition + transform.position;
-
+            Vector3 worldPosition = localPosition + transform.position;
             emitParams.position = worldPosition;
 
-            Vector3 outwardVelocity = Vector3.Normalize(localPosition - explosionCenter);
-            //float upwardOffset = Random.Range(1.0f, 3.0f);
-            //outwardVelocity.y += upwardOffset;
+            Vector3 angularVelocityOffset = Vector3.zero;
+            bool isBaseAngularVelocity = baseAngularVelocity != 0.0f;
+            if (isBaseAngularVelocity)
+            {
+                Quaternion angularVelocityRotation = Quaternion.Euler(0.0f, 0.0f, baseAngularVelocity);
+                Vector3 angularVelocityLocalPosition = angularVelocityRotation * localPosition;
+                angularVelocityOffset = angularVelocityLocalPosition - localPosition;
+            }
+            
+            Vector3 outwardVelocity = localPosition - explosionCenter;
             outwardVelocity *= Random.Range(minExplosiveStrength, maxExplosiveStrength);
-
-            emitParams.velocity = baseVelocity + outwardVelocity;
+            emitParams.velocity = angularVelocityOffset + outwardVelocity;// baseVelocity + angularVelocityOffset + outwardVelocity;
             LocalParticleSystem.Emit(emitParams, 1);
 
-            customParticleDatas.Add(new Vector4(subdivisionCount, tileIndex, 0, 0));
+            customParticleDatas.Add(new Vector4(subdivisionCount, tileIndex, Mathf.Deg2Rad * -transform.eulerAngles.z, 0));
         }
 
         LocalParticleSystem.SetCustomParticleData(customParticleDatas, ParticleSystemCustomData.Custom1);
@@ -173,8 +182,8 @@ public class SpriteExploder : MonoBehaviour
         streams.Add(ParticleSystemVertexStream.Position);
         streams.Add(ParticleSystemVertexStream.UV);
         streams.Add(ParticleSystemVertexStream.Color);
-        streams.Add(ParticleSystemVertexStream.Custom1XY);
-  
+        streams.Add(ParticleSystemVertexStream.Custom1XYZ);
+
         particleSystemRenderer.SetActiveVertexStreams(streams);
     }
 

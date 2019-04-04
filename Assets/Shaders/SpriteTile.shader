@@ -36,7 +36,8 @@
             {
                 float4 vertex : POSITION;
                 float4 uv : TEXCOORD0;
-				float4 color    : COLOR;
+				float4 color : COLOR;
+				float4 rotation : TEXCOORD1;
             };
 
             struct v2f
@@ -44,6 +45,7 @@
 				float4 vertex : SV_POSITION;
                 float4 uv : TEXCOORD0;             
 				fixed4 color : COLOR;
+				float4 rotation : TEXCOORD1;
             };
 
             sampler2D _MainTex;
@@ -57,12 +59,20 @@
                 o.uv.xy = TRANSFORM_TEX(v.uv, _MainTex);
 				o.uv.zw = v.uv.zw;
 				o.color = v.color;
+				o.rotation.x = v.rotation.x;
                 return o;
             }
 
             fixed4 frag (v2f i) : SV_Target
             {
 				float2 uv = i.uv.xy;
+
+				float sinFactor = sin(i.rotation.x);
+				float cosFactor = cos(i.rotation.x);
+
+				float2x2 rotationMatrix = float2x2(cosFactor, sinFactor, -sinFactor, cosFactor);
+
+				uv = mul(uv - float2(0.5, 0.5), rotationMatrix) + float2(0.5, 0.5);
 
 				float subdivisionCount = floor(i.uv.z);
 				float tileCount = subdivisionCount * subdivisionCount;
