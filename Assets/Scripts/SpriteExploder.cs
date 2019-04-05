@@ -163,9 +163,13 @@ public class SpriteExploder : MonoBehaviour
             localParticleSystem = gameObject.AddComponent<ParticleSystem>();
         }
 
+        LocalParticleSystem.Stop();
+
         ParticleSystem.MainModule main = LocalParticleSystem.main;
         main.playOnAwake = false;
         main.startLifetime = hasLocalParticleSytem ? main.startLifetime : defaultStartLifetime;
+        main.duration = main.startLifetime.constantMax;
+        main.loop = false;
         main.startSize = GetParticleSize();
         main.startColor = LocalSpriteRenderer.color;
         main.maxParticles = GetParticleCount();
@@ -187,7 +191,9 @@ public class SpriteExploder : MonoBehaviour
         collision.lifetimeLoss = hasLocalParticleSytem ? collision.lifetimeLoss : defaultLifetimeLoss;
 
         ParticleSystemRenderer particleSystemRenderer = GetComponent<ParticleSystemRenderer>();
-        particleSystemRenderer.renderMode = ParticleSystemRenderMode.Billboard;
+        particleSystemRenderer.renderMode = ParticleSystemRenderMode.Mesh;
+        particleSystemRenderer.mesh = Resources.GetBuiltinResource<Mesh>("Quad.fbx");
+        particleSystemRenderer.enableGPUInstancing = true;
         particleSystemRenderer.minParticleSize = 0.0f;
         particleSystemRenderer.maxParticleSize = 1.0f;
 
@@ -208,6 +214,8 @@ public class SpriteExploder : MonoBehaviour
         streams.Add(ParticleSystemVertexStream.Custom1X);
 
         particleSystemRenderer.SetActiveVertexStreams(streams);
+
+        LocalParticleSystem.Play();
     }
 
     float GetParticleSize()

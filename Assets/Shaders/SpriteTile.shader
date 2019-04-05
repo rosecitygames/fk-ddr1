@@ -8,6 +8,7 @@
 		[PerRendererData] _SubdivisionCount("Subdivision Count", Int) = 0
 		_Color("Tint", Color) = (1,1,1,1)
     }
+
     SubShader
     {
 		Tags
@@ -29,13 +30,43 @@
         Pass
         {
             CGPROGRAM
-			#pragma target 2.5
+			// Upgrade NOTE: excluded shader from OpenGL ES 2.0 because it uses non-square matrices
+			#pragma exclude_renderers gles
+			#pragma target 4.5
             #pragma vertex vert
             #pragma fragment frag
 			#pragma multi_compile_instancing
 			#pragma multi_compile _ PIXELSNAP_ON
 			#pragma multi_compile _ ETC1_EXTERNAL_ALPHA
-            #include "UnityCG.cginc"
+
+			#pragma instancing_options procedural:vertInstancingSetup
+			#define UNITY_PARTICLE_INSTANCE_DATA MyParticleInstanceData
+			#define UNITY_PARTICLE_INSTANCE_DATA_NO_ANIM_FRAME
+			struct MyParticleInstanceData
+			{
+				float3x4 transform;
+				uint color;
+				float custom;
+			};
+			#include "UnityCG.cginc"
+			#include "UnityStandardParticleInstancing.cginc"
+			
+            struct appdata
+            {
+                float4 vertex : POSITION;
+				float2 texcoord : TEXCOORD0;
+				fixed4 color : COLOR;
+				float custom : TEXCOORD1;
+				UNITY_VERTEX_INPUT_INSTANCE_ID
+            };
+
+            struct v2f
+            {
+				float4 vertex : SV_POSITION;
+				float2 texcoord : TEXCOORD0;
+				fixed4 color : COLOR;
+				float custom : TEXCOORD1;
+            };
 
 			sampler2D _MainTex;
 			float4 _MainTex_ST;
@@ -44,29 +75,28 @@
 			int _SubdivisionCount;
 			fixed2 _Flip;
 
-            struct appdata
-            {
-                float4 vertex : POSITION;
-                float4 texcoord : TEXCOORD0;
-				float4 color : COLOR;
-            };
-
-            struct v2f
-            {
-				float4 vertex : SV_POSITION;
-                float4 texcoord : TEXCOORD0;             
-				fixed4 color : COLOR;
-            };
-
             v2f vert (appdata IN)
             {
                 v2f OUT;
 				UNITY_INITIALIZE_OUTPUT(v2f, OUT);
+				UNITY_SETUP_INSTANCE_ID(IN);
+
+				OUT.color = IN.color;
+				OUT.texcoord = IN.texcoord;
+				vertInstancingColor(OUT.color);
+				vertInstancingUVs(IN.texcoord, OUT.texcoord);
 
 				OUT.vertex = UnityObjectToClipPos(IN.vertex);
-				OUT.texcoord.xy = TRANSFORM_TEX(IN.texcoord, _MainTex);
-				OUT.texcoord.z = IN.texcoord.z;
-				OUT.color = IN.color;
+				//OUT.texcoord.xy = TRANSFORM_TEX(IN.texcoord, _MainTex);
+				//OUT.texcoord.z = IN.texcoord.z;
+				//OUT.color = IN.color;
+
+#if defined(UNITY_PARTICLE_INSTANCING_ENABLED)
+				UNITY_PARTICLE_INSTANCE_DATA data = unity_ParticleInstanceData[unity_InstanceID];
+				//tileIndex = fmod(floor(data.tileIndex), tileCount);
+				OUT.custom = data.custom;
+#endif
+
 
                 return OUT;
             }
@@ -83,7 +113,7 @@
 
 				int tileCount = _SubdivisionCount * _SubdivisionCount;
 
-				float tileIndex = fmod(floor(i.texcoord.z), tileCount);
+				float tileIndex = fmod(floor(i.custom), tileCount);
 
 				float2 tileScale = float2(1.0f / _SubdivisionCount, 1.0f / _SubdivisionCount);
 
