@@ -5159,7 +5159,7 @@ ParticleSystemRenderer:
   m_EnableGPUInstancing: 1
   m_ApplyActiveColorSpace: 1
   m_AllowRoll: 1
-  m_VertexStreams: 00040320
+  m_VertexStreams: 0004032223
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
   m_Mesh1: {fileID: 0}
   m_Mesh2: {fileID: 0}
@@ -5260,9 +5260,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3da77be760bc5a648bf13215de9b77ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  subdivisionCount: 64
-  minExplosiveStrength: 2
-  maxExplosiveStrength: 4
+  subdivisionCount: 128
+  minExplosiveStrength: 1
+  maxExplosiveStrength: 2
   gravityModifier: 1
   isExplodingOnStart: 1
   delaySeconds: 3
@@ -5274,7 +5274,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 662272541}
   m_LocalRotation: {x: -0, y: -0, z: -0.02118529, w: 0.9997756}
-  m_LocalPosition: {x: -4.29, y: 3.78, z: 0}
+  m_LocalPosition: {x: -6.82, y: 3.62, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -5742,7 +5742,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 78b58dd1fe41a2247a5e431aeed0b812, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.9622642, g: 0.4765931, b: 0.86593646, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -5759,13 +5759,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1317117859}
-  m_LocalRotation: {x: -0, y: -0, z: 0.23658688, w: -0.97161037}
-  m_LocalPosition: {x: 3.12, y: 4.86, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: 0.21843976, w: 0.9758505}
+  m_LocalPosition: {x: 2.04, y: 4.97, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -27.37}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 25.235}
 --- !u!114 &1317117864
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5778,9 +5778,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3da77be760bc5a648bf13215de9b77ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  subdivisionCount: 64
-  minExplosiveStrength: 0
-  maxExplosiveStrength: 0
+  subdivisionCount: 128
+  minExplosiveStrength: 0.5
+  maxExplosiveStrength: 1
   gravityModifier: 0.5
   isExplodingOnStart: 0
   delaySeconds: 0
@@ -6413,7 +6413,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!212 &1804269929
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -6452,7 +6452,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: a44d3b08ec84ba44d9ed9baa38b832d4, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.8060078, g: 0.8773585, b: 0.10346207, a: 0.8862745}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -6474,12 +6474,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3da77be760bc5a648bf13215de9b77ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  subdivisionCount: 64
+  subdivisionCount: 128
   minExplosiveStrength: 0.5
   maxExplosiveStrength: 2
   gravityModifier: 1
   isExplodingOnStart: 1
-  delaySeconds: 0
+  delaySeconds: 0.25
 --- !u!4 &1804269931
 Transform:
   m_ObjectHideFlags: 0
@@ -6487,10 +6487,10 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1804269928}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0.3615384, w: 0.93235725}
   m_LocalPosition: {x: -0.28, y: 2.46, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 2, y: 2, z: 2}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -42.389004}

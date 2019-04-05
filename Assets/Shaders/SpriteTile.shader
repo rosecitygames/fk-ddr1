@@ -3,6 +3,7 @@
     Properties
     {
 		[PerRendererData] _MainTex("Sprite Texture", 2D) = "white" {}
+		[PerRendererData] _Flip("Flip", Vector) = (1,1,1,1)
 		_Color("Tint", Color) = (1,1,1,1)
     }
     SubShader
@@ -12,6 +13,8 @@
 			"Queue" = "Transparent"
 			"IgnoreProjector" = "True"
 			"RenderType" = "Transparent"
+			"PreviewType" = "Plane"
+			"CanUseSpriteAtlas" = "True"
 		}
 
         LOD 100
@@ -32,12 +35,17 @@
 			#pragma multi_compile _ ETC1_EXTERNAL_ALPHA
             #include "UnityCG.cginc"
 
+			sampler2D _MainTex;
+			float4 _MainTex_ST;
+			fixed4 _Color;
+			fixed2 _Flip;
+
             struct appdata
             {
                 float4 vertex : POSITION;
                 float4 uv : TEXCOORD0;
 				float4 color : COLOR;
-				float4 rotation : TEXCOORD1;
+				float4 custom : TEXCOORD1;
             };
 
             struct v2f
@@ -45,34 +53,36 @@
 				float4 vertex : SV_POSITION;
                 float4 uv : TEXCOORD0;             
 				fixed4 color : COLOR;
-				float4 rotation : TEXCOORD1;
+				float4 custom : TEXCOORD1;
             };
 
-            sampler2D _MainTex;
-            float4 _MainTex_ST;
-			fixed4 _Color;
-
-            v2f vert (appdata v)
+            v2f vert (appdata IN)
             {
-                v2f o;
-                o.vertex = UnityObjectToClipPos(v.vertex);
-                o.uv.xy = TRANSFORM_TEX(v.uv, _MainTex);
-				o.uv.zw = v.uv.zw;
-				o.color = v.color;
-				o.rotation.x = v.rotation.x;
-                return o;
+                v2f OUT;
+
+				OUT.vertex = UnityObjectToClipPos(IN.vertex);
+				OUT.uv.xy = TRANSFORM_TEX(IN.uv, _MainTex);
+				OUT.uv.zw = IN.uv.zw;
+				OUT.color = IN.color;
+				OUT.custom.xy = IN.custom.xy;
+				OUT.custom.z = IN.custom.z;
+
+                return OUT;
             }
 
             fixed4 frag (v2f i) : SV_Target
             {
 				float2 uv = i.uv.xy;
+				//uv.y *= _Flip.y;
 
-				float sinFactor = sin(i.rotation.x);
-				float cosFactor = cos(i.rotation.x);
+				//float2 flip = i.custom.xy;
 
+				float1 rotation = i.custom.z;
+				float sinFactor = sin(rotation);
+				float cosFactor = cos(rotation);
 				float2x2 rotationMatrix = float2x2(cosFactor, sinFactor, -sinFactor, cosFactor);
-
-				uv = mul(uv - float2(0.5, 0.5), rotationMatrix) + float2(0.5, 0.5);
+				float2 uvRotationOffset = float2(0.5, 0.5);
+				uv = mul(uv - uvRotationOffset, rotationMatrix) + uvRotationOffset;
 
 				float subdivisionCount = floor(i.uv.z);
 				float tileCount = subdivisionCount * subdivisionCount;

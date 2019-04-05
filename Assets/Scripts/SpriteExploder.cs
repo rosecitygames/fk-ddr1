@@ -74,6 +74,9 @@ public class SpriteExploder : MonoBehaviour
 
         Sprite sprite = LocalSpriteRenderer.sprite;
 
+        float flipX = LocalSpriteRenderer.flipX ? -1.0f : 1.0f;
+        float flipY = LocalSpriteRenderer.flipY ? -1.0f : 1.0f;
+
         float particleSize = GetParticleSize();
         int particleCount = GetParticleCount();
 
@@ -82,10 +85,12 @@ public class SpriteExploder : MonoBehaviour
 
         int tileX = 0;
         int tileY = 0;
+        float tileRotation = 0.0f;
 
         ParticleSystem.EmitParams emitParams = new ParticleSystem.EmitParams();
 
-        List<Vector4> customParticleDatas = new List<Vector4>(particleCount);
+        List<Vector4> custom1ParticleDatas = new List<Vector4>(particleCount);
+        List<Vector4> custom2ParticleDatas = new List<Vector4>(particleCount);
 
         Vector3 baseVelocity = Vector3.zero;
         float baseAngularVelocity = 0.0f;
@@ -99,21 +104,24 @@ public class SpriteExploder : MonoBehaviour
 
             baseAngularVelocity = rigidbody2d.angularVelocity;
         }
-        
+
+        Vector3 localScale = transform.localScale;
         Vector3 localExplosionCenter = (explosionCenter - transform.position);
 
         for (int tileIndex = 0; tileIndex < particleCount; tileIndex++)
         {
             tileX = tileIndex % subdivisionCount;
             tileY = Mathf.FloorToInt((float)tileIndex/ subdivisionCount);
-
+            
             Vector3 localPosition = new Vector3();
-            localPosition.x = (tileX * particleSize) + offsetX;
-            localPosition.y = (tileY * particleSize) + offsetY;
+            localPosition.x = (tileX * localScale.x * particleSize) + offsetX * localScale.x;
+            localPosition.y = (tileY * localScale.y * particleSize) + offsetY * localScale.y;
             localPosition = transform.rotation * localPosition;
 
             Vector3 worldPosition = localPosition + transform.position;
             emitParams.position = worldPosition;
+
+            tileRotation = Mathf.Deg2Rad * -transform.eulerAngles.z;
 
             /*
             Vector3 angularVelocityOffset = Vector3.zero;
@@ -131,11 +139,12 @@ public class SpriteExploder : MonoBehaviour
             emitParams.velocity = baseVelocity + outwardVelocity;
             LocalParticleSystem.Emit(emitParams, 1);
 
-            customParticleDatas.Add(new Vector4(subdivisionCount, tileIndex, Mathf.Deg2Rad * -transform.eulerAngles.z, 0));
+            custom1ParticleDatas.Add(new Vector4(subdivisionCount, tileIndex, flipX, flipY));
+            custom2ParticleDatas.Add(new Vector4(tileRotation, 0.0f, 0.0f, 0.0f));
         }
 
-        LocalParticleSystem.SetCustomParticleData(customParticleDatas, ParticleSystemCustomData.Custom1);
-
+        LocalParticleSystem.SetCustomParticleData(custom1ParticleDatas, ParticleSystemCustomData.Custom1);
+        LocalParticleSystem.SetCustomParticleData(custom2ParticleDatas, ParticleSystemCustomData.Custom2);
     }
 
     const float defaultStartLifetime = 10.0f;
@@ -189,13 +198,15 @@ public class SpriteExploder : MonoBehaviour
 
         MaterialPropertyBlock materialPropertyBlock = new MaterialPropertyBlock();
         materialPropertyBlock.SetTexture("_MainTex", LocalSpriteRenderer.sprite.texture);
+        materialPropertyBlock.SetVector("_Flip", new Vector4(1.0f, -1.0f, 0.0f, 0.0f));
         particleSystemRenderer.SetPropertyBlock(materialPropertyBlock);
 
         List<ParticleSystemVertexStream> streams = new List<ParticleSystemVertexStream>();
         streams.Add(ParticleSystemVertexStream.Position);
         streams.Add(ParticleSystemVertexStream.UV);
         streams.Add(ParticleSystemVertexStream.Color);
-        streams.Add(ParticleSystemVertexStream.Custom1XYZ);
+        streams.Add(ParticleSystemVertexStream.Custom1XYZW);
+        streams.Add(ParticleSystemVertexStream.Custom2X);
 
         particleSystemRenderer.SetActiveVertexStreams(streams);
     }
