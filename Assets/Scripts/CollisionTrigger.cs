@@ -6,10 +6,10 @@ using UnityEngine.Events;
 public class CollisionTrigger : MonoBehaviour
 {
     [SerializeField]
-    UnityEvent CollisionEnter;
+    UnityEvent CollisionEnter = null;
 
     [SerializeField]
-    SpriteExploder generator;
+    SpriteExploder exploder = null;
 
     private void Start()
     {
@@ -20,10 +20,10 @@ public class CollisionTrigger : MonoBehaviour
     {
         if (enabled == false) return;
 
-        if (generator != null)
+        if (exploder != null)
         {
             ContactPoint2D contactPoint = collision.GetContact(0);
-            generator.Explode(contactPoint.point);
+            exploder.Explode(contactPoint.point);
         }
 
         if (CollisionEnter != null)

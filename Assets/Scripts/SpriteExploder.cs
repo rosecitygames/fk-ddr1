@@ -24,7 +24,7 @@ public class SpriteExploder : MonoBehaviour
     bool isExplodingOnStart = false;
 
     [SerializeField]
-    float delaySeconds;
+    float delaySeconds = 0.0f;
 
     SpriteRenderer localSpriteRenderer;
     SpriteRenderer LocalSpriteRenderer
