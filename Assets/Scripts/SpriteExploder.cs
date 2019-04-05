@@ -18,6 +18,9 @@ public class SpriteExploder : MonoBehaviour
     float gravityModifier = 1.0f;
 
     [SerializeField]
+    bool isCollisionEnabled = true;
+
+    [SerializeField]
     bool isExplodingOnStart = false;
 
     [SerializeField]
@@ -53,6 +56,7 @@ public class SpriteExploder : MonoBehaviour
 
     void Start()
     {
+        InitParticleSystem();
         if (isExplodingOnStart)
         {
             Invoke("Explode", delaySeconds);
@@ -175,7 +179,7 @@ public class SpriteExploder : MonoBehaviour
         shape.enabled = false;
 
         ParticleSystem.CollisionModule collision = LocalParticleSystem.collision;
-        collision.enabled = true;
+        collision.enabled = isCollisionEnabled;
         collision.type = ParticleSystemCollisionType.World;
         collision.mode = ParticleSystemCollisionMode.Collision2D;
         collision.dampen = hasLocalParticleSytem ? collision.dampen : new ParticleSystem.MinMaxCurve(defaultMinDampen, defaultMaxDampen);

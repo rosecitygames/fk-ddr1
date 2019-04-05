@@ -5262,8 +5262,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   subdivisionCount: 128
   minExplosiveStrength: 1
-  maxExplosiveStrength: 2
-  gravityModifier: 1
+  maxExplosiveStrength: 6
+  gravityModifier: 0.25
+  isCollisionEnabled: 1
   isExplodingOnStart: 1
   delaySeconds: 3
 --- !u!4 &662272550
@@ -5779,9 +5780,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   subdivisionCount: 128
-  minExplosiveStrength: 0.5
-  maxExplosiveStrength: 1
-  gravityModifier: 0.5
+  minExplosiveStrength: 1
+  maxExplosiveStrength: 6
+  gravityModifier: 0.25
+  isCollisionEnabled: 1
   isExplodingOnStart: 0
   delaySeconds: 0
 --- !u!60 &1317117865
@@ -6475,9 +6477,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   subdivisionCount: 128
-  minExplosiveStrength: 0.5
-  maxExplosiveStrength: 2
-  gravityModifier: 1
+  minExplosiveStrength: 1
+  maxExplosiveStrength: 6
+  gravityModifier: 0.25
+  isCollisionEnabled: 1
   isExplodingOnStart: 1
   delaySeconds: 0.25
 --- !u!4 &1804269931
