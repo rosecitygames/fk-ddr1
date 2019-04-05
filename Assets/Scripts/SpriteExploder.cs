@@ -85,12 +85,10 @@ public class SpriteExploder : MonoBehaviour
 
         int tileX = 0;
         int tileY = 0;
-        float tileRotation = 0.0f;
-
+        
         ParticleSystem.EmitParams emitParams = new ParticleSystem.EmitParams();
 
         List<Vector4> custom1ParticleDatas = new List<Vector4>(particleCount);
-        List<Vector4> custom2ParticleDatas = new List<Vector4>(particleCount);
 
         Vector3 baseVelocity = Vector3.zero;
         float baseAngularVelocity = 0.0f;
@@ -120,9 +118,7 @@ public class SpriteExploder : MonoBehaviour
 
             Vector3 worldPosition = localPosition + transform.position;
             emitParams.position = worldPosition;
-
-            tileRotation = Mathf.Deg2Rad * -transform.eulerAngles.z;
-
+            
             /*
             Vector3 angularVelocityOffset = Vector3.zero;
             bool isBaseAngularVelocity = baseAngularVelocity != 0.0f;
@@ -139,12 +135,10 @@ public class SpriteExploder : MonoBehaviour
             emitParams.velocity = baseVelocity + outwardVelocity;
             LocalParticleSystem.Emit(emitParams, 1);
 
-            custom1ParticleDatas.Add(new Vector4(subdivisionCount, tileIndex, flipX, flipY));
-            custom2ParticleDatas.Add(new Vector4(tileRotation, 0.0f, 0.0f, 0.0f));
+            custom1ParticleDatas.Add(new Vector4(tileIndex, 0.0f, 0.0f, 0.0f));
         }
 
         LocalParticleSystem.SetCustomParticleData(custom1ParticleDatas, ParticleSystemCustomData.Custom1);
-        LocalParticleSystem.SetCustomParticleData(custom2ParticleDatas, ParticleSystemCustomData.Custom2);
     }
 
     const float defaultStartLifetime = 10.0f;
@@ -198,6 +192,8 @@ public class SpriteExploder : MonoBehaviour
 
         MaterialPropertyBlock materialPropertyBlock = new MaterialPropertyBlock();
         materialPropertyBlock.SetTexture("_MainTex", LocalSpriteRenderer.sprite.texture);
+        materialPropertyBlock.SetInt("_SubdivisionCount", subdivisionCount);
+        materialPropertyBlock.SetFloat("_Rotation", GetMaterialRotaion());
         materialPropertyBlock.SetVector("_Flip", new Vector4(1.0f, -1.0f, 0.0f, 0.0f));
         particleSystemRenderer.SetPropertyBlock(materialPropertyBlock);
 
@@ -205,8 +201,7 @@ public class SpriteExploder : MonoBehaviour
         streams.Add(ParticleSystemVertexStream.Position);
         streams.Add(ParticleSystemVertexStream.UV);
         streams.Add(ParticleSystemVertexStream.Color);
-        streams.Add(ParticleSystemVertexStream.Custom1XYZW);
-        streams.Add(ParticleSystemVertexStream.Custom2X);
+        streams.Add(ParticleSystemVertexStream.Custom1X);
 
         particleSystemRenderer.SetActiveVertexStreams(streams);
     }
@@ -219,6 +214,11 @@ public class SpriteExploder : MonoBehaviour
     int GetParticleCount()
     {
         return subdivisionCount * subdivisionCount;
+    }
+
+    float GetMaterialRotaion()
+    {
+        return Mathf.Deg2Rad * -transform.eulerAngles.z;
     }
 
 }
