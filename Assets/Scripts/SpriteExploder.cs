@@ -8,7 +8,7 @@ namespace RCG.SpriteExploder
     public class SpriteExploder : MonoBehaviour
     {
         [SerializeField]
-        int subdivisionCount = 64;
+        int particlePixelSize = 8;
 
         [SerializeField]
         float minExplosiveStrength = 0.5f;
@@ -79,6 +79,8 @@ namespace RCG.SpriteExploder
             LocalSpriteRenderer.enabled = false;
 
             Sprite sprite = LocalSpriteRenderer.sprite;
+
+            int subdivisionCount = GetSubdivisionCount();
 
             float flipX = LocalSpriteRenderer.flipX ? -1.0f : 1.0f;
             float flipY = LocalSpriteRenderer.flipY ? -1.0f : 1.0f;
@@ -193,7 +195,7 @@ namespace RCG.SpriteExploder
 
             MaterialPropertyBlock materialPropertyBlock = new MaterialPropertyBlock();
             materialPropertyBlock.SetTexture("_MainTex", LocalSpriteRenderer.sprite.texture);
-            materialPropertyBlock.SetInt("_SubdivisionCount", subdivisionCount);
+            materialPropertyBlock.SetInt("_SubdivisionCount", GetSubdivisionCount());
             materialPropertyBlock.SetFloat("_Rotation", GetMaterialRotaion());
             materialPropertyBlock.SetVector("_Flip", new Vector4(1.0f, -1.0f, 0.0f, 0.0f));
             particleSystemRenderer.SetPropertyBlock(materialPropertyBlock);
@@ -209,14 +211,23 @@ namespace RCG.SpriteExploder
             LocalParticleSystem.Play();
         }
 
-        float GetParticleSize()
+        int GetSubdivisionCount()
         {
-            return LocalSpriteRenderer.sprite.bounds.size.x / subdivisionCount;
+            float spriteSizeX = LocalSpriteRenderer.sprite.bounds.size.x * LocalSpriteRenderer.sprite.pixelsPerUnit;
+            float spriteSizeY = LocalSpriteRenderer.sprite.bounds.size.y * LocalSpriteRenderer.sprite.pixelsPerUnit;
+            float spriteSizeMax = Mathf.Max(spriteSizeX, spriteSizeY);
+            return Mathf.CeilToInt(spriteSizeMax / particlePixelSize);
         }
 
         int GetParticleCount()
         {
+            int subdivisionCount = GetSubdivisionCount();
             return subdivisionCount * subdivisionCount;
+        }
+
+        float GetParticleSize()
+        {
+            return LocalSpriteRenderer.sprite.bounds.size.x / GetSubdivisionCount();
         }
 
         float GetMaterialRotaion()
