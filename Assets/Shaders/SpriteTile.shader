@@ -30,7 +30,7 @@
         Pass
         {
             CGPROGRAM
-			// Upgrade NOTE: excluded shader from OpenGL ES 2.0 because it uses non-square matrices
+
 			#pragma exclude_renderers gles
 			#pragma target 4.5
             #pragma vertex vert
@@ -83,21 +83,15 @@
 
 				OUT.color = IN.color;
 				OUT.texcoord = IN.texcoord;
+
 				vertInstancingColor(OUT.color);
 				vertInstancingUVs(IN.texcoord, OUT.texcoord);
-
 				OUT.vertex = UnityObjectToClipPos(IN.vertex);
-				//OUT.texcoord.xy = TRANSFORM_TEX(IN.texcoord, _MainTex);
-				//OUT.texcoord.z = IN.texcoord.z;
-				//OUT.color = IN.color;
 
 #if defined(UNITY_PARTICLE_INSTANCING_ENABLED)
 				UNITY_PARTICLE_INSTANCE_DATA data = unity_ParticleInstanceData[unity_InstanceID];
-				//tileIndex = fmod(floor(data.tileIndex), tileCount);
 				OUT.custom = data.custom;
 #endif
-
-
                 return OUT;
             }
 
