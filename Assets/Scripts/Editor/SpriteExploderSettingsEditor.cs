@@ -3,7 +3,7 @@
 namespace RCG.SpriteExploder.Editor
 {
     [CustomEditor(typeof(SpriteExploderSettings))]
-    public class SpriteExploderWindowSettingsEditor : UnityEditor.Editor
+    public class SpriteExploderSettingsEditor : UnityEditor.Editor
     {
         SerializedProperty particlePixelSize;
         SerializedProperty isUsingCollision;
