@@ -19,5 +19,15 @@ namespace RCG.SpriteExploder.Demo
                 CollisionEnter.Invoke();
             }
         }
+
+        private void OnCollisionEnter(Collision collision)
+        {
+            if (enabled == false) return;
+
+            if (CollisionEnter != null)
+            {
+                CollisionEnter.Invoke();
+            }
+        }
     }
 }

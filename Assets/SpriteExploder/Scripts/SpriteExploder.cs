@@ -41,6 +41,9 @@ namespace RCG.SpriteExploder
         }
 
         [SerializeField]
+        ParticleSystemCollisionMode collisionMode = ParticleSystemCollisionMode.Collision2D;
+
+        [SerializeField]
         float minExplosiveStrength = 0.5f;
 
         [SerializeField]
@@ -112,6 +115,8 @@ namespace RCG.SpriteExploder
             LocalSpriteRenderer.enabled = false;
 
             Sprite sprite = LocalSpriteRenderer.sprite;
+            float boundSizeX = sprite.bounds.size.x;
+            float halfBoundSizeX = boundSizeX * 0.5f;
 
             int subdivisionCount = GetSubdivisionCount();
 
@@ -121,8 +126,8 @@ namespace RCG.SpriteExploder
             float particleSize = GetParticleSize();
             int particleCount = GetParticleCount();
 
-            float offsetX = -sprite.bounds.size.x * 0.5f * (1.0f - (1.0f / subdivisionCount));
-            float offsetY = -sprite.bounds.size.x * 0.5f * (1.0f - (1.0f / subdivisionCount));
+            float offsetX = -halfBoundSizeX * (1.0f - (1.0f / subdivisionCount));
+            float offsetY = -halfBoundSizeX * (1.0f - (1.0f / subdivisionCount));
 
             int tileX = 0;
             int tileY = 0;
@@ -161,6 +166,7 @@ namespace RCG.SpriteExploder
                 emitParams.position = worldPosition;
 
                 Vector3 outwardVelocity = localPosition;// - localExplosionCenter;
+                outwardVelocity.z = Random.Range(-halfBoundSizeX, halfBoundSizeX);
                 outwardVelocity *= Random.Range(minExplosiveStrength, maxExplosiveStrength);
                 emitParams.velocity = baseVelocity + outwardVelocity;
                 LocalParticleSystem.Emit(emitParams, 1);
@@ -211,7 +217,7 @@ namespace RCG.SpriteExploder
             ParticleSystem.CollisionModule collision = LocalParticleSystem.collision;
             collision.enabled = isCollisionEnabled;
             collision.type = ParticleSystemCollisionType.World;
-            collision.mode = ParticleSystemCollisionMode.Collision2D;
+            collision.mode = hasLocalParticleSytem ? collision.mode : collisionMode;
             collision.dampen = hasLocalParticleSytem ? collision.dampen : new ParticleSystem.MinMaxCurve(defaultMinDampen, defaultMaxDampen);
             collision.bounce = hasLocalParticleSytem ? collision.bounce : new ParticleSystem.MinMaxCurve(defaultMinBounce, defaultMaxBounce);
             collision.lifetimeLoss = hasLocalParticleSytem ? collision.lifetimeLoss : defaultLifetimeLoss;
@@ -267,6 +273,5 @@ namespace RCG.SpriteExploder
         {
             return Mathf.Deg2Rad * -transform.eulerAngles.z;
         }
-
     }
 }

@@ -24,7 +24,7 @@
 
 		Cull Off
 		Lighting Off
-		ZWrite Off
+		ZWrite On
 		Blend SrcAlpha OneMinusSrcAlpha
 
         Pass
