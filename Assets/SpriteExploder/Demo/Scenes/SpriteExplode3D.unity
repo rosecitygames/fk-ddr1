@@ -4865,7 +4865,7 @@ MonoBehaviour:
   maxExplosiveStrength: 4
   gravityModifier: 0.5
   isExplodingOnStart: 1
-  delaySeconds: 1
+  delaySeconds: 1.8
 --- !u!4 &89558595
 Transform:
   m_ObjectHideFlags: 0
@@ -9633,7 +9633,7 @@ MonoBehaviour:
   maxExplosiveStrength: 4
   gravityModifier: 0.5
   isExplodingOnStart: 1
-  delaySeconds: 1
+  delaySeconds: 1.4
 --- !u!4 &107777972
 Transform:
   m_ObjectHideFlags: 0
@@ -14401,7 +14401,7 @@ MonoBehaviour:
   maxExplosiveStrength: 4
   gravityModifier: 0.5
   isExplodingOnStart: 1
-  delaySeconds: 1
+  delaySeconds: 1.2
 --- !u!4 &154262079
 Transform:
   m_ObjectHideFlags: 0
@@ -24006,7 +24006,7 @@ MonoBehaviour:
   maxExplosiveStrength: 4
   gravityModifier: 0.5
   isExplodingOnStart: 1
-  delaySeconds: 1
+  delaySeconds: 1.6
 --- !u!4 &856043857
 Transform:
   m_ObjectHideFlags: 0

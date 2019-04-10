@@ -166,7 +166,7 @@ namespace RCG.SpriteExploder
                 emitParams.position = worldPosition;
 
                 Vector3 outwardVelocity = localPosition;// - localExplosionCenter;
-                outwardVelocity.z = Random.Range(-halfBoundSizeX, halfBoundSizeX);
+                outwardVelocity.z = Random.Range(-halfBoundSizeX *.5f, halfBoundSizeX*.5f);
                 outwardVelocity *= Random.Range(minExplosiveStrength, maxExplosiveStrength);
                 emitParams.velocity = baseVelocity + outwardVelocity;
                 LocalParticleSystem.Emit(emitParams, 1);
