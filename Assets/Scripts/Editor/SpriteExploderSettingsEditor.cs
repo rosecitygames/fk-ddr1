@@ -1,24 +1,25 @@
-﻿using UnityEditor;
+﻿using UnityEngine;
+using UnityEditor;
 
 namespace RCG.SpriteExploder.Editor
 {
     [CustomEditor(typeof(SpriteExploderSettings))]
     public class SpriteExploderSettingsEditor : UnityEditor.Editor
     {
-        SerializedProperty particlePixelSize;
-        SerializedProperty isUsingCollision;
+        SerializedProperty minimumParticlePixelSize;
+        SerializedProperty isCollidable;
 
         void OnEnable()
         {
-            particlePixelSize = serializedObject.FindProperty("particlePixelSize");
-            isUsingCollision = serializedObject.FindProperty("isUsingCollision");
+            minimumParticlePixelSize = serializedObject.FindProperty("minimumParticlePixelSize");
+            isCollidable = serializedObject.FindProperty("isCollidable");
         }
 
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
-            EditorGUILayout.PropertyField(particlePixelSize);
-            EditorGUILayout.PropertyField(isUsingCollision);
+            EditorGUILayout.PropertyField(minimumParticlePixelSize, new GUIContent("Min Particle Pixel Size"));
+            EditorGUILayout.PropertyField(isCollidable);
             serializedObject.ApplyModifiedProperties();
         }
     }

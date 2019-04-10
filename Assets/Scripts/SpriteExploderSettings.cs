@@ -4,23 +4,25 @@ namespace RCG.SpriteExploder
 {
     public class SpriteExploderSettings : ScriptableObject
     {
+        [Tooltip("The minimum particle pixel size a Sprite Exploder can use")]
         [SerializeField]
-        int particlePixelSize = 8;
-        public int ParticlePixelSize
+        int minimumParticlePixelSize = 8;
+        public int MinimumParticlePixelSize
         {
             get
             {
-                return particlePixelSize;
+                return minimumParticlePixelSize;
             }
         }
 
+        [Tooltip("Allows Sprite Exploder particles to use collision physics")]
         [SerializeField]
-        bool isUsingCollision = true;
-        public bool IsUsingCollision
+        bool isCollidable = true;
+        public bool IsCollidable
         {
             get
             {
-                return isUsingCollision;
+                return isCollidable;
             }
         }
  

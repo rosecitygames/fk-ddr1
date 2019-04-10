@@ -21,15 +21,12 @@ namespace RCG.SpriteExploder
         }
 
         [SerializeField]
-        bool isUsingGlobalSettings = true;
-
-        [SerializeField]
         int particlePixelSize = 8;
         int ParticlePixelSize
         {
             get
             {
-                return isUsingGlobalSettings ? GlobalSettings.ParticlePixelSize : particlePixelSize;
+                return Mathf.Max(GlobalSettings.MinimumParticlePixelSize, particlePixelSize);
             }
         }
 
@@ -39,7 +36,7 @@ namespace RCG.SpriteExploder
         {
             get
             {
-                return isUsingGlobalSettings ? GlobalSettings.IsUsingCollision : isCollisionEnabled;
+                return GlobalSettings.IsCollidable ? isCollisionEnabled : GlobalSettings.IsCollidable;
             }
         }
 
