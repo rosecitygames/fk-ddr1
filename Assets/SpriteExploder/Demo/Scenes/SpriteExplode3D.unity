@@ -4902,7 +4902,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3da77be760bc5a648bf13215de9b77ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  particlePixelSize: 8
+  particlePixelSize: 16
   isCollisionEnabled: 1
   collisionMode: 0
   minExplosiveStrength: 1
