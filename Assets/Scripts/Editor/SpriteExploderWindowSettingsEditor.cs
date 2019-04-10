@@ -2,22 +2,22 @@
 
 namespace RCG.SpriteExploder.Editor
 {
-    [CustomEditor(typeof(SpriteEploderWindowSettings))]
+    [CustomEditor(typeof(SpriteExploderSettings))]
     public class SpriteExploderWindowSettingsEditor : UnityEditor.Editor
     {
-        SerializedProperty defaultPixelSize;
+        SerializedProperty particlePixelSize;
         SerializedProperty isUsingCollision;
 
         void OnEnable()
         {
-            defaultPixelSize = serializedObject.FindProperty("defaultPixelSize");
+            particlePixelSize = serializedObject.FindProperty("particlePixelSize");
             isUsingCollision = serializedObject.FindProperty("isUsingCollision");
         }
 
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
-            EditorGUILayout.PropertyField(defaultPixelSize);
+            EditorGUILayout.PropertyField(particlePixelSize);
             EditorGUILayout.PropertyField(isUsingCollision);
             serializedObject.ApplyModifiedProperties();
         }

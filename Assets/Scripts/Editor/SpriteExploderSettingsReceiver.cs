@@ -5,10 +5,10 @@ namespace RCG.SpriteExploder.Editor
     public class SpriteExploderSettingsReceiver : PresetSelectorReceiver
     {
         Preset initialValues;
-        SpriteEploderWindowSettings currentSettings;
+        SpriteExploderSettings currentSettings;
         SpriteExploderEditorWindow currentWindow;
 
-        public void Init(SpriteEploderWindowSettings settings, SpriteExploderEditorWindow window)
+        public void Init(SpriteExploderSettings settings, SpriteExploderEditorWindow window)
         {
             currentWindow = window;
             currentSettings = settings;
@@ -25,8 +25,6 @@ namespace RCG.SpriteExploder.Editor
             {
                 initialValues.ApplyTo(currentSettings);
             }
-
-            currentSettings.ApplySettings(currentWindow);
         }
 
         public override void OnSelectionClosed(Preset selection)

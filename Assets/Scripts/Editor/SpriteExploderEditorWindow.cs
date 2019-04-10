@@ -15,18 +15,18 @@ namespace RCG.SpriteExploder.Editor
         }
 
         UnityEditor.Editor settingsEditor;
-        SpriteEploderWindowSettings serializedSettings;
 
-        public int DefaultPixelSize
+        SpriteExploderSettings serializedSettings;
+        SpriteExploderSettings SerializedSettings
         {
-            get { return EditorPrefs.GetInt("SpriteExploder_DefaultPixelSize"); }
-            set { EditorPrefs.SetInt("SpriteExploder_DefaultPixelSize", value); }
-        }
-
-        public bool IsUsingCollision
-        {
-            get { return EditorPrefs.GetBool("SpriteExploder_IsUsingCollision"); }
-            set { EditorPrefs.GetBool("SpriteExploder_IsUsingCollision", value); }
+            get
+            {
+                if (serializedSettings == null)
+                {
+                    serializedSettings = SpriteExploderSettings.GetResource();
+                }
+                return serializedSettings;
+            }
         }
 
         [MenuItem("Edit/Sprite Exploder Settings...")]
@@ -37,15 +37,12 @@ namespace RCG.SpriteExploder.Editor
 
         void OnEnable()
         {
-            serializedSettings = CreateInstance<SpriteEploderWindowSettings>();
-            serializedSettings.Init(this);
-            settingsEditor = UnityEditor.Editor.CreateEditor(serializedSettings);
+            settingsEditor = UnityEditor.Editor.CreateEditor(SerializedSettings);
         }
 
         void OnDisable()
         {
-            Object.DestroyImmediate(serializedSettings);
-            Object.DestroyImmediate(settingsEditor);
+            DestroyImmediate(settingsEditor);
         }
 
         void OnGUI()
@@ -58,19 +55,14 @@ namespace RCG.SpriteExploder.Editor
             if (EditorGUI.DropdownButton(buttonPosition, Styles.presetIcon, FocusType.Passive, Styles.iconButton))
             {
                 var presetReceiver = CreateInstance<SpriteExploderSettingsReceiver>();
-                presetReceiver.Init(serializedSettings, this);
+                presetReceiver.Init(SerializedSettings, this);
 
-                PresetSelector.ShowSelector(serializedSettings, null, true, presetReceiver);
+                PresetSelector.ShowSelector(SerializedSettings, null, true, presetReceiver);
             }
             EditorGUILayout.EndHorizontal();
 
             EditorGUI.BeginChangeCheck();
             settingsEditor.OnInspectorGUI();
-
-            if (EditorGUI.EndChangeCheck())
-            {
-                serializedSettings.ApplySettings(this);
-            }
         }
     }
 }

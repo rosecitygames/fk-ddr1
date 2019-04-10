@@ -7,8 +7,41 @@ namespace RCG.SpriteExploder
     [RequireComponent(typeof(SpriteRenderer))]
     public class SpriteExploder : MonoBehaviour
     {
+        SpriteExploderSettings globalSettings;
+        SpriteExploderSettings GlobalSettings
+        {
+            get
+            {
+                if (globalSettings == null)
+                {
+                    globalSettings = SpriteExploderSettings.GetResource();
+                }
+                return globalSettings;
+            }
+        }
+
+        [SerializeField]
+        bool isUsingGlobalSettings = true;
+
         [SerializeField]
         int particlePixelSize = 8;
+        int ParticlePixelSize
+        {
+            get
+            {
+                return isUsingGlobalSettings ? GlobalSettings.ParticlePixelSize : particlePixelSize;
+            }
+        }
+
+        [SerializeField]
+        bool isCollisionEnabled = true;
+        bool IsCollisionEnabled
+        {
+            get
+            {
+                return isUsingGlobalSettings ? GlobalSettings.IsUsingCollision : isCollisionEnabled;
+            }
+        }
 
         [SerializeField]
         float minExplosiveStrength = 0.5f;
@@ -18,9 +51,6 @@ namespace RCG.SpriteExploder
 
         [SerializeField]
         float gravityModifier = 1.0f;
-
-        [SerializeField]
-        bool isCollisionEnabled = true;
 
         [SerializeField]
         bool isExplodingOnStart = false;
@@ -216,7 +246,7 @@ namespace RCG.SpriteExploder
             float spriteSizeX = LocalSpriteRenderer.sprite.bounds.size.x * LocalSpriteRenderer.sprite.pixelsPerUnit;
             float spriteSizeY = LocalSpriteRenderer.sprite.bounds.size.y * LocalSpriteRenderer.sprite.pixelsPerUnit;
             float spriteSizeMax = Mathf.Max(spriteSizeX, spriteSizeY);
-            return Mathf.CeilToInt(spriteSizeMax / particlePixelSize);
+            return Mathf.CeilToInt(spriteSizeMax / ParticlePixelSize);
         }
 
         int GetParticleCount()
