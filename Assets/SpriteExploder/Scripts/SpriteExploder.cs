@@ -95,7 +95,13 @@ namespace RCG.SpriteExploder
         [ContextMenu("Explode")]
         public void Explode()
         {
-            Explode(Vector3.zero);
+#if UNITY_EDITOR
+            if (UnityEditor.EditorApplication.isPlaying == false)
+            {
+                return;
+            }
+#endif
+                Explode(Vector3.zero);
         }
 
         public void Explode(Vector3 explosionCenter)

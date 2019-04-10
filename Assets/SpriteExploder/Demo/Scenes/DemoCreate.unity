@@ -248,11 +248,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3da77be760bc5a648bf13215de9b77ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  subdivisionCount: 128
+  particlePixelSize: 8
+  isCollisionEnabled: 1
   minExplosiveStrength: 0.5
   maxExplosiveStrength: 2
   gravityModifier: 1
-  isCollisionEnabled: 1
   isExplodingOnStart: 1
   delaySeconds: 1
 --- !u!212 &662272545

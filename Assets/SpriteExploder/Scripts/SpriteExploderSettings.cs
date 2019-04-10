@@ -11,7 +11,7 @@ namespace RCG.SpriteExploder
         {
             get
             {
-                return minimumParticlePixelSize;
+                return Mathf.Max(1, minimumParticlePixelSize);
             }
         }
 
@@ -34,7 +34,7 @@ namespace RCG.SpriteExploder
             return resource;
         }
 
-        const string settingsAssetPath = "Assets/Resources/SpriteExploderSettings.asset";
+        const string settingsAssetPath = "Assets/SpriteExploder/Resources/SpriteExploderSettings.asset";
         public static void CreateAsset()
         {
 #if UNITY_EDITOR        

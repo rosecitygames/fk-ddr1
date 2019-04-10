@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fcbcd9aa42f707f4a9ff3cb80775c71d, type: 3}
   m_Name: SpriteExploderSettings
   m_EditorClassIdentifier: 
-  particlePixelSize: 8
-  isUsingCollision: 1
+  minimumParticlePixelSize: 8
+  isCollidable: 1
