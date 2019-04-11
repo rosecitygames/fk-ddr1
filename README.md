@@ -14,12 +14,12 @@ Developers can also define global settings to specify particle attributes and al
 
 Name | Description 
 --- | --- 
-Particle Pixel Size | The square pixel size of each particle that the sprite will separated into 
-Collision Mode | Which collision mode the particle system will use
-Min Explosive Strength | The minimum amount of explosive force that will be applied to the particles
-Max Explosive Strength | The maximum amount of explosive force that will be applied to the particles
-Is Exploding On Start | Whether or not the sprite will explode automatically on the Unity start event
-Delay Seconds | The amount of delay before the explosion happens
+**Particle Pixel Size** | The square pixel size of each particle that the sprite will separated into 
+**Collision Mode** | Which collision mode the particle system will use
+**Min Explosive Strength** | The minimum amount of explosive force that will be applied to the particles
+**Max Explosive Strength** | The maximum amount of explosive force that will be applied to the particles
+**Is Exploding On Start** | Whether or not the sprite will explode automatically on the Unity start event
+**Delay Seconds** | The amount of delay before the explosion happens
 
 ##### Public Methods
 
@@ -39,5 +39,5 @@ These are accesible via the menu item at *Edit > Sprite Exploder Settings...* or
 
 Name | Description 
 --- | --- 
-Min Particle Pixel Size | The minimum particle pixel size that all *Sprite Exploder* components will use
-Is Collidable | Whether or not a *Sprite Exploder* component particles are able to use collision physics
+**Min Particle Pixel Size** | The minimum particle pixel size that all *Sprite Exploder* components will use
+**Is Collidable** | Whether or not a *Sprite Exploder* component particles are able to use collision physics
