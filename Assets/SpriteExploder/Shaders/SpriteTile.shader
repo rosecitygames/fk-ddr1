@@ -5,7 +5,8 @@
 		[PerRendererData] _MainTex("Sprite Texture", 2D) = "white" {}
 		[PerRendererData] _Flip("Flip", Vector) = (1,1,1,1)
 		[PerRendererData] _Rotation("Rotation", Float) = 0
-		[PerRendererData] _SubdivisionCount("Subdivision Count", Int) = 0
+		[PerRendererData] _SubdivisionCountX("Subdivision Count X", Int) = 0
+		[PerRendererData] _SubdivisionCountY("Subdivision Count Y", Int) = 0
 		_Color("Tint", Color) = (1,1,1,1)
     }
 
@@ -72,7 +73,8 @@
 			float4 _MainTex_ST;
 			fixed4 _Color;
 			float _Rotation;
-			int _SubdivisionCount;
+			int _SubdivisionCountX;
+			int _SubdivisionCountY;
 			fixed2 _Flip;
 
             v2f vert (appdata IN)
@@ -105,17 +107,17 @@
 				float2 uvRotationOffset = float2(0.5, 0.5);
 				uv = mul(uv - uvRotationOffset, rotationMatrix) + uvRotationOffset;
 
-				int tileCount = _SubdivisionCount * _SubdivisionCount;
+				int tileCount = _SubdivisionCountX * _SubdivisionCountY;
 
 				float tileIndex = fmod(floor(i.custom), tileCount);
 
-				float2 tileScale = float2(1.0f / _SubdivisionCount, 1.0f / _SubdivisionCount);
+				float2 tileScale = float2(1.0f / _SubdivisionCountY, 1.0f / _SubdivisionCountY);
 
-				float tileX = fmod(tileIndex, _SubdivisionCount);
-				float tileY = floor(tileIndex / _SubdivisionCount);
+				float tileX = fmod(tileIndex, _SubdivisionCountX);
+				float tileY = floor(tileIndex / _SubdivisionCountX);
 
-				float offsetX = tileX / _SubdivisionCount;
-				float offsetY = tileY / _SubdivisionCount;
+				float offsetX = tileX / _SubdivisionCountX;
+				float offsetY = tileY / _SubdivisionCountY;
 
 				float2 tileUV = float2(offsetX, offsetY);
 				

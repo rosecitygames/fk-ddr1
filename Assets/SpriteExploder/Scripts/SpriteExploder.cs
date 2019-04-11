@@ -116,18 +116,21 @@ namespace RCG.SpriteExploder
 
             Sprite sprite = LocalSpriteRenderer.sprite;
             float boundSizeX = sprite.bounds.size.x;
+            float boundSizeY = sprite.bounds.size.y;
             float halfBoundSizeX = boundSizeX * 0.5f;
+            float halfBoundSizeY = boundSizeY * 0.5f;
 
-            int subdivisionCount = GetSubdivisionCount();
+            int subdivisionCountX = GetSubdivisionCountX();
+            int subdivisionCountY = GetSubdivisionCountY();
 
             float flipX = LocalSpriteRenderer.flipX ? -1.0f : 1.0f;
             float flipY = LocalSpriteRenderer.flipY ? -1.0f : 1.0f;
 
-            float particleSize = GetParticleSize();
+            float particleSizeMax = GetParticleSizeMax();
             int particleCount = GetParticleCount();
 
-            float offsetX = -halfBoundSizeX * (1.0f - (1.0f / subdivisionCount));
-            float offsetY = -halfBoundSizeX * (1.0f - (1.0f / subdivisionCount));
+            float offsetX = -halfBoundSizeX * (1.0f - (1.0f / subdivisionCountX));
+            float offsetY = -halfBoundSizeY * (1.0f - (1.0f / subdivisionCountY));
 
             int tileX = 0;
             int tileY = 0;
@@ -154,20 +157,24 @@ namespace RCG.SpriteExploder
 
             for (int tileIndex = 0; tileIndex < particleCount; tileIndex++)
             {
-                tileX = tileIndex % subdivisionCount;
-                tileY = Mathf.FloorToInt((float)tileIndex/ subdivisionCount);
+                tileX = tileIndex % subdivisionCountX;
+                tileY = Mathf.FloorToInt((float)tileIndex/ subdivisionCountX);
             
                 Vector3 localPosition = new Vector3();
-                localPosition.x = (tileX * localScale.x * particleSize) + offsetX * localScale.x;
-                localPosition.y = (tileY * localScale.y * particleSize) + offsetY * localScale.y;
+                localPosition.x = (tileX * localScale.x * particleSizeMax) + offsetX * localScale.x;
+                localPosition.y = (tileY * localScale.y * particleSizeMax) + offsetY * localScale.y;
                 localPosition = transform.rotation * localPosition;
 
                 Vector3 worldPosition = localPosition + transform.position;
                 emitParams.position = worldPosition;
 
                 Vector3 outwardVelocity = localPosition;// - localExplosionCenter;
-                outwardVelocity.z = Random.Range(-halfBoundSizeX *.5f, halfBoundSizeX*.5f);
+                if (collisionMode == ParticleSystemCollisionMode.Collision3D)
+                {
+                    outwardVelocity.z = Random.Range(-halfBoundSizeX * 0.5f, halfBoundSizeX * 0.5f);
+                }
                 outwardVelocity *= Random.Range(minExplosiveStrength, maxExplosiveStrength);
+
                 emitParams.velocity = baseVelocity + outwardVelocity;
                 LocalParticleSystem.Emit(emitParams, 1);
 
@@ -202,7 +209,7 @@ namespace RCG.SpriteExploder
             main.startLifetime = hasLocalParticleSytem ? main.startLifetime : defaultStartLifetime;
             main.duration = main.startLifetime.constantMax;
             main.loop = false;
-            main.startSize = GetParticleSize();
+            main.startSize = GetParticleSizeMax();
             main.startColor = LocalSpriteRenderer.color;
             main.maxParticles = GetParticleCount();
             main.simulationSpace = ParticleSystemSimulationSpace.World;
@@ -217,7 +224,7 @@ namespace RCG.SpriteExploder
             ParticleSystem.CollisionModule collision = LocalParticleSystem.collision;
             collision.enabled = isCollisionEnabled;
             collision.type = ParticleSystemCollisionType.World;
-            collision.mode = hasLocalParticleSytem ? collision.mode : collisionMode;
+            collision.mode = collisionMode;
             collision.dampen = hasLocalParticleSytem ? collision.dampen : new ParticleSystem.MinMaxCurve(defaultMinDampen, defaultMaxDampen);
             collision.bounce = hasLocalParticleSytem ? collision.bounce : new ParticleSystem.MinMaxCurve(defaultMinBounce, defaultMaxBounce);
             collision.lifetimeLoss = hasLocalParticleSytem ? collision.lifetimeLoss : defaultLifetimeLoss;
@@ -234,7 +241,8 @@ namespace RCG.SpriteExploder
 
             MaterialPropertyBlock materialPropertyBlock = new MaterialPropertyBlock();
             materialPropertyBlock.SetTexture("_MainTex", LocalSpriteRenderer.sprite.texture);
-            materialPropertyBlock.SetInt("_SubdivisionCount", GetSubdivisionCount());
+            materialPropertyBlock.SetInt("_SubdivisionCountX", GetSubdivisionCountX());
+            materialPropertyBlock.SetInt("_SubdivisionCountY", GetSubdivisionCountY());
             materialPropertyBlock.SetFloat("_Rotation", GetMaterialRotaion());
             materialPropertyBlock.SetVector("_Flip", new Vector4(1.0f, -1.0f, 0.0f, 0.0f));
             particleSystemRenderer.SetPropertyBlock(materialPropertyBlock);
@@ -250,23 +258,36 @@ namespace RCG.SpriteExploder
             LocalParticleSystem.Play();
         }
 
-        int GetSubdivisionCount()
+        int GetSubdivisionCountX()
         {
             float spriteSizeX = LocalSpriteRenderer.sprite.bounds.size.x * LocalSpriteRenderer.sprite.pixelsPerUnit;
+            return Mathf.CeilToInt(spriteSizeX / ParticlePixelSize); 
+        }
+
+        int GetSubdivisionCountY()
+        {
             float spriteSizeY = LocalSpriteRenderer.sprite.bounds.size.y * LocalSpriteRenderer.sprite.pixelsPerUnit;
-            float spriteSizeMax = Mathf.Max(spriteSizeX, spriteSizeY);
-            return Mathf.CeilToInt(spriteSizeMax / ParticlePixelSize);
+            return Mathf.CeilToInt(spriteSizeY / ParticlePixelSize);
         }
 
         int GetParticleCount()
         {
-            int subdivisionCount = GetSubdivisionCount();
-            return subdivisionCount * subdivisionCount;
+            return GetSubdivisionCountX() * GetSubdivisionCountY();
         }
 
-        float GetParticleSize()
+        float GetParticleSizeMax()
         {
-            return LocalSpriteRenderer.sprite.bounds.size.x / GetSubdivisionCount();
+            return Mathf.Max(GetParticleSizeX(), GetParticleSizeY());
+        }
+
+        float GetParticleSizeX()
+        {
+            return LocalSpriteRenderer.sprite.bounds.size.x / GetSubdivisionCountX();
+        }
+
+        float GetParticleSizeY()
+        {
+            return LocalSpriteRenderer.sprite.bounds.size.y / GetSubdivisionCountY();
         }
 
         float GetMaterialRotaion()

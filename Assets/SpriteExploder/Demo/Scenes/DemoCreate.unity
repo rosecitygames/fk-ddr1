@@ -250,6 +250,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   particlePixelSize: 8
   isCollisionEnabled: 1
+  collisionMode: 1
   minExplosiveStrength: 0.5
   maxExplosiveStrength: 2
   gravityModifier: 1
@@ -292,7 +293,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 78b58dd1fe41a2247a5e431aeed0b812, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 059487aa836cdf24d82b1d706afc0ced, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
