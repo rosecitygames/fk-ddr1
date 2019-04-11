@@ -99,8 +99,8 @@
 
             fixed4 frag (v2f i) : SV_Target
             {
-				float2 uv = i.texcoord.xy;
-				
+				float2 uv = i.texcoord.xy * _Flip;
+
 				float sinFactor = sin(_Rotation);
 				float cosFactor = cos(_Rotation);
 				float2x2 rotationMatrix = float2x2(cosFactor, sinFactor, -sinFactor, cosFactor);
@@ -114,7 +114,16 @@
 				float2 tileScale = float2(1.0f / _SubdivisionCountY, 1.0f / _SubdivisionCountY);
 
 				float tileX = fmod(tileIndex, _SubdivisionCountX);
+				if (_Flip.x < 0)
+				{
+					tileX = _SubdivisionCountX - tileX;
+				}
+
 				float tileY = floor(tileIndex / _SubdivisionCountX);
+				if (_Flip.y < 0)
+				{
+					tileY = _SubdivisionCountY - tileY;
+				}
 
 				float offsetX = tileX / _SubdivisionCountX;
 				float offsetY = tileY / _SubdivisionCountY;

@@ -244,7 +244,7 @@ namespace RCG.SpriteExploder
             materialPropertyBlock.SetInt("_SubdivisionCountX", GetSubdivisionCountX());
             materialPropertyBlock.SetInt("_SubdivisionCountY", GetSubdivisionCountY());
             materialPropertyBlock.SetFloat("_Rotation", GetMaterialRotaion());
-            materialPropertyBlock.SetVector("_Flip", new Vector4(1.0f, -1.0f, 0.0f, 0.0f));
+            materialPropertyBlock.SetVector("_Flip", GetFlipVector());
             particleSystemRenderer.SetPropertyBlock(materialPropertyBlock);
 
             List<ParticleSystemVertexStream> streams = new List<ParticleSystemVertexStream>();
@@ -293,6 +293,14 @@ namespace RCG.SpriteExploder
         float GetMaterialRotaion()
         {
             return Mathf.Deg2Rad * -transform.eulerAngles.z;
+        }
+
+        Vector4 GetFlipVector()
+        {
+            Vector4 flip = new Vector4();
+            flip.x = LocalSpriteRenderer.flipX ? -1.0f : 1.0f;
+            flip.y = LocalSpriteRenderer.flipY ? -1.0f : 1.0f;
+            return flip;
         }
     }
 }
