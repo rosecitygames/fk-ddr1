@@ -25,7 +25,7 @@ Name | Description
 
 Name | Description 
 --- | --- 
-Explode | Triggers the sprite to explode. An optional *explosionCenter* parameter can be used to offset the center of the explosion
+**Explode** | Triggers the sprite to explode. An optional *explosionCenter* parameter can be used to offset the center of the explosion
 
 ## Sprite Exploder Settings
 
