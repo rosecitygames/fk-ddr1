@@ -29,11 +29,11 @@ Explode | Triggers the sprite to explode. An optional *explosionCenter* paramete
 
 ## Sprite Exploder Settings
 
-![screenshot](https://drive.google.com/uc?export=view&id=1uQEH1xWfqZ0I7RFUC-JbmQK_HAedNMJk)
-
 #### Description
 Settings that define global *Sprite Exploder* parameters. Values can be set in the editor or at runtime.
 These are accesible via the menu item at *Edit > Sprite Exploder Settings...* or via the scriptable object located in *Assets/SpriteExploder/Resources/SpriteExploderSettings*
+
+![screenshot](https://drive.google.com/uc?export=view&id=1uQEH1xWfqZ0I7RFUC-JbmQK_HAedNMJk)
 
 #### Settings Parameters
 
