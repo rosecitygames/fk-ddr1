@@ -10,7 +10,7 @@ Developers can also define global settings to specify particle attributes and al
 
 ![screenshot](https://drive.google.com/uc?export=view&id=1LPllR6xZByGBEf2dR--ibDC8UOo4LikV)
 
-##### Component Parameters
+#### Component Parameters
 
 Name | Description 
 --- | --- 
@@ -21,7 +21,7 @@ Name | Description
 **Is Exploding On Start** | Whether or not the sprite will explode automatically on the Unity start event
 **Delay Seconds** | The amount of delay before the explosion happens
 
-##### Public Methods
+#### Public Methods
 
 Name | Description 
 --- | --- 
@@ -35,7 +35,7 @@ Explode | Triggers the sprite to explode. An optional *explosionCenter* paramete
 Settings that define global *Sprite Exploder* parameters. Values can be set in the editor or at runtime.
 These are accesible via the menu item at *Edit > Sprite Exploder Settings...* or via the scriptable object located in *Assets/SpriteExploder/Resources/SpriteExploderSettings*
 
-##### Settings Parameters
+#### Settings Parameters
 
 Name | Description 
 --- | --- 
