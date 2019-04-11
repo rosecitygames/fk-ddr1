@@ -7,7 +7,7 @@ namespace RCG.SpriteExploder
     [RequireComponent(typeof(SpriteRenderer))]
     public class SpriteExploder : MonoBehaviour
     {
-        enum CollisionMode
+        public enum SpriteExploderCollisionMode
         {
             None,
             Collision2D,
@@ -29,11 +29,29 @@ namespace RCG.SpriteExploder
 
         [SerializeField]
         int particlePixelSize = 8;
-        int ParticlePixelSize
+        public int ParticlePixelSize
         {
             get
             {
                 return Mathf.Max(GlobalSettings.MinimumParticlePixelSize, particlePixelSize);
+            }
+            set
+            {
+                particlePixelSize = value;
+            }
+        }
+
+        [SerializeField]
+        SpriteExploderCollisionMode collisionMode = SpriteExploderCollisionMode.Collision2D;
+        public SpriteExploderCollisionMode CollisionMode
+        {
+            get
+            {
+                return (GlobalSettings.IsCollidable == false) ? SpriteExploderCollisionMode.None : collisionMode;
+            }
+            set
+            {
+                collisionMode = value;
             }
         }
 
@@ -41,34 +59,79 @@ namespace RCG.SpriteExploder
         {
             get
             {
-                if (GlobalSettings.IsCollidable == false)
-                {
-                    return false;
-                }
-                else
-                {
-                    return collisionMode != CollisionMode.None;
-                }
+                return CollisionMode != SpriteExploderCollisionMode.None;
             }
         }
 
         [SerializeField]
-        CollisionMode collisionMode = CollisionMode.Collision2D;
-
-        [SerializeField]
         float minExplosiveStrength = 0.5f;
+        public float MinExplosiveStrength
+        {
+            get
+            {
+                return minExplosiveStrength;
+            }
+            set
+            {
+                minExplosiveStrength = value;
+            }
+        }
 
         [SerializeField]
         float maxExplosiveStrength = 2.0f;
+        public float MaxExplosiveStrength
+        {
+            get
+            {
+                return maxExplosiveStrength;
+            }
+            set
+            {
+                maxExplosiveStrength = value;
+            }
+        }
 
         [SerializeField]
         float gravityModifier = 1.0f;
+        public float GravityModifier
+        {
+            get
+            {
+                return gravityModifier;
+            }
+            set
+            {
+                gravityModifier = value;
+            }
+        }
 
         [SerializeField]
         bool isExplodingOnStart = false;
+        public bool IsExplodingOnStart
+        {
+            get
+            {
+                return isExplodingOnStart;
+            }
+            set
+            {
+                isExplodingOnStart = value;
+            }
+        }
 
         [SerializeField]
         float delaySeconds = 0.0f;
+        public float DelaySeconds
+        {
+            get
+            {
+                return delaySeconds;
+            }
+            set
+            {
+                delaySeconds = value;
+            }
+        }
 
         SpriteRenderer localSpriteRenderer;
         SpriteRenderer LocalSpriteRenderer
@@ -103,7 +166,7 @@ namespace RCG.SpriteExploder
             InitParticleSystem();
             if (isExplodingOnStart)
             {
-                Invoke("Explode", delaySeconds);
+                Explode();
             }
         }
 
@@ -121,7 +184,15 @@ namespace RCG.SpriteExploder
 
         public void Explode(Vector3 explosionCenter)
         {
-            if (hasExploded) return;
+            StopAllCoroutines();
+            StartCoroutine(ExplodeCoroutine(explosionCenter));
+        }
+
+        IEnumerator ExplodeCoroutine(Vector3 explosionCenter)
+        {
+            yield return new WaitForSeconds(delaySeconds);
+
+            if (hasExploded) yield break;
             hasExploded = true;
 
             LocalSpriteRenderer.enabled = false;
@@ -165,7 +236,6 @@ namespace RCG.SpriteExploder
             }
 
             Vector3 localScale = transform.localScale;
-            Vector3 localExplosionCenter = (explosionCenter - transform.position);
 
             for (int tileIndex = 0; tileIndex < particleCount; tileIndex++)
             {
@@ -180,12 +250,12 @@ namespace RCG.SpriteExploder
                 Vector3 worldPosition = localPosition + transform.position;
                 emitParams.position = worldPosition;
 
-                Vector3 outwardVelocity = localPosition;// - localExplosionCenter;
-                if (collisionMode == CollisionMode.Collision3D)
+                Vector3 outwardVelocity = localPosition - explosionCenter;
+                if (collisionMode == SpriteExploderCollisionMode.Collision3D)
                 {
                     outwardVelocity.z = Random.Range(-halfBoundSizeX * 0.5f, halfBoundSizeX * 0.5f);
                 }
-                outwardVelocity *= Random.Range(minExplosiveStrength, maxExplosiveStrength);
+                outwardVelocity *= Random.Range(MinExplosiveStrength, MaxExplosiveStrength);
 
                 emitParams.velocity = baseVelocity + outwardVelocity;
                 LocalParticleSystem.Emit(emitParams, 1);
@@ -225,7 +295,7 @@ namespace RCG.SpriteExploder
             main.startColor = LocalSpriteRenderer.color;
             main.maxParticles = GetParticleCount();
             main.simulationSpace = ParticleSystemSimulationSpace.World;
-            main.gravityModifier = gravityModifier;
+            main.gravityModifier = GravityModifier;
 
             ParticleSystem.EmissionModule emission = LocalParticleSystem.emission;
             emission.enabled = false;
@@ -236,7 +306,7 @@ namespace RCG.SpriteExploder
             ParticleSystem.CollisionModule collision = LocalParticleSystem.collision;
             collision.enabled = IsCollisionEnabled;
             collision.type = ParticleSystemCollisionType.World;
-            collision.mode = collisionMode == CollisionMode.Collision3D ? ParticleSystemCollisionMode.Collision3D : ParticleSystemCollisionMode.Collision2D;
+            collision.mode = CollisionMode == SpriteExploderCollisionMode.Collision3D ? ParticleSystemCollisionMode.Collision3D : ParticleSystemCollisionMode.Collision2D;
             collision.dampen = hasLocalParticleSytem ? collision.dampen : new ParticleSystem.MinMaxCurve(defaultMinDampen, defaultMaxDampen);
             collision.bounce = hasLocalParticleSytem ? collision.bounce : new ParticleSystem.MinMaxCurve(defaultMinBounce, defaultMaxBounce);
             collision.lifetimeLoss = hasLocalParticleSytem ? collision.lifetimeLoss : defaultLifetimeLoss;

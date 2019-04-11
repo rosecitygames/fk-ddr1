@@ -11,7 +11,6 @@ namespace RCG.SpriteExploder.Editor
         {
             public static GUIContent presetIcon = EditorGUIUtility.IconContent("Preset.Context");
             public static GUIStyle iconButton = new GUIStyle("IconButton");
-
         }
 
         UnityEditor.Editor settingsEditor;
@@ -32,7 +31,8 @@ namespace RCG.SpriteExploder.Editor
         [MenuItem("Edit/Sprite Exploder Settings...")]
         static void OpenWindow()
         {
-            GetWindow<SpriteExploderEditorWindow>();
+            SpriteExploderEditorWindow window = GetWindow<SpriteExploderEditorWindow>();
+            window.titleContent = new GUIContent("Sprite Exploder Settings");
         }
 
         void OnEnable()
@@ -47,19 +47,7 @@ namespace RCG.SpriteExploder.Editor
 
         void OnGUI()
         {
-            EditorGUILayout.BeginHorizontal();
-            GUILayout.FlexibleSpace();
-
-            var buttonPosition = EditorGUILayout.GetControlRect(false, EditorGUIUtility.singleLineHeight, Styles.iconButton);
-
-            if (EditorGUI.DropdownButton(buttonPosition, Styles.presetIcon, FocusType.Passive, Styles.iconButton))
-            {
-                var presetReceiver = CreateInstance<SpriteExploderSettingsReceiver>();
-                presetReceiver.Init(SerializedSettings, this);
-
-                PresetSelector.ShowSelector(SerializedSettings, null, true, presetReceiver);
-            }
-            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.Space();
 
             EditorGUI.BeginChangeCheck();
             settingsEditor.OnInspectorGUI();
