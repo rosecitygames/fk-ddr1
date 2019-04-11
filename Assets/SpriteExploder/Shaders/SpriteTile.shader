@@ -111,7 +111,9 @@
 
 				float tileIndex = fmod(floor(i.custom), tileCount);
 
-				float2 tileScale = float2(1.0f / _SubdivisionCountY, 1.0f / _SubdivisionCountY);
+				float minSubdivisionCount = min(_SubdivisionCountX, _SubdivisionCountY);
+				float tileScalePercent = 1.0f / minSubdivisionCount;
+				float2 tileScale = float2(tileScalePercent, tileScalePercent);
 
 				float tileX = fmod(tileIndex, _SubdivisionCountX);
 				if (_Flip.x < 0)
