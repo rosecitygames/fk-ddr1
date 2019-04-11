@@ -7,6 +7,13 @@ namespace RCG.SpriteExploder
     [RequireComponent(typeof(SpriteRenderer))]
     public class SpriteExploder : MonoBehaviour
     {
+        enum CollisionMode
+        {
+            None,
+            Collision2D,
+            Collision3D
+        }
+
         SpriteExploderSettings globalSettings;
         SpriteExploderSettings GlobalSettings
         {
@@ -30,18 +37,23 @@ namespace RCG.SpriteExploder
             }
         }
 
-        [SerializeField]
-        bool isCollisionEnabled = true;
         bool IsCollisionEnabled
         {
             get
             {
-                return GlobalSettings.IsCollidable ? isCollisionEnabled : GlobalSettings.IsCollidable;
+                if (GlobalSettings.IsCollidable == false)
+                {
+                    return false;
+                }
+                else
+                {
+                    return collisionMode != CollisionMode.None;
+                }
             }
         }
 
         [SerializeField]
-        ParticleSystemCollisionMode collisionMode = ParticleSystemCollisionMode.Collision2D;
+        CollisionMode collisionMode = CollisionMode.Collision2D;
 
         [SerializeField]
         float minExplosiveStrength = 0.5f;
@@ -169,7 +181,7 @@ namespace RCG.SpriteExploder
                 emitParams.position = worldPosition;
 
                 Vector3 outwardVelocity = localPosition;// - localExplosionCenter;
-                if (collisionMode == ParticleSystemCollisionMode.Collision3D)
+                if (collisionMode == CollisionMode.Collision3D)
                 {
                     outwardVelocity.z = Random.Range(-halfBoundSizeX * 0.5f, halfBoundSizeX * 0.5f);
                 }
@@ -222,9 +234,9 @@ namespace RCG.SpriteExploder
             shape.enabled = false;
 
             ParticleSystem.CollisionModule collision = LocalParticleSystem.collision;
-            collision.enabled = isCollisionEnabled;
+            collision.enabled = IsCollisionEnabled;
             collision.type = ParticleSystemCollisionType.World;
-            collision.mode = collisionMode;
+            collision.mode = collisionMode == CollisionMode.Collision3D ? ParticleSystemCollisionMode.Collision3D : ParticleSystemCollisionMode.Collision2D;
             collision.dampen = hasLocalParticleSytem ? collision.dampen : new ParticleSystem.MinMaxCurve(defaultMinDampen, defaultMaxDampen);
             collision.bounce = hasLocalParticleSytem ? collision.bounce : new ParticleSystem.MinMaxCurve(defaultMinBounce, defaultMaxBounce);
             collision.lifetimeLoss = hasLocalParticleSytem ? collision.lifetimeLoss : defaultLifetimeLoss;
