@@ -1,5 +1,6 @@
-# Floppy Knights - Distributable Developer Resource 1
-![screenshot](https://drive.google.com/uc?export=view&id=1eFp3480sVH2uKPnwJ-gFilStaoC8Y7rt)
+# Distributable Developer Resource 1
+
+![screenshot](https://drive.google.com/uc?export=view&id=1T3zHMzXhBtr_AwtMzvhRJkQD0CxVKjU0)
 
 ## Sprite Exploder
 
@@ -15,7 +16,7 @@ Developers can also define global settings to specify particle attributes and al
 Name | Description 
 --- | --- 
 **Particle Pixel Size** | The square pixel size of each particle that the sprite will separated into 
-**Collision Mode** | Which collision mode the particle system will use
+**Collision Mode** | Which collision mode the particle system will use: None, 2D, or 3D
 **Min Explosive Strength** | The minimum amount of explosive force that will be applied to the particles
 **Max Explosive Strength** | The maximum amount of explosive force that will be applied to the particles
 **Is Exploding On Start** | Whether or not the sprite will explode automatically on the Unity start event
