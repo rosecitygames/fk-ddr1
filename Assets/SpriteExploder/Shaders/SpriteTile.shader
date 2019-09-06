@@ -2,7 +2,7 @@
 {
     Properties
     {
-		[PerRendererData] _MainTex("Sprite Texture", 2D) = "white" {}
+		[PerRendererData] _GridTex("Sprite Texture", 2D) = "white" {}
 		[PerRendererData] _Flip("Flip", Vector) = (1,1,1,1)
 		[PerRendererData] _Rotation("Rotation", Float) = 0
 		[PerRendererData] _SubdivisionCountX("Subdivision Count X", Int) = 0
@@ -69,8 +69,8 @@
 				float custom : TEXCOORD1;
             };
 
-			sampler2D _MainTex;
-			float4 _MainTex_ST;
+			sampler2D _GridTex;
+			float4 _GridTex_ST;
 			fixed4 _Color;
 			float _Rotation;
 			int _SubdivisionCountX;
@@ -134,7 +134,7 @@
 				
 				float2 textcoord = uv * tileScale + tileUV;
 
-                fixed4 col = tex2D(_MainTex, textcoord);
+                fixed4 col = tex2D(_GridTex, textcoord);
 				col *= i.color;
 
                 return col;

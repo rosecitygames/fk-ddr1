@@ -322,7 +322,7 @@ namespace RCG.SpriteExploder
             particleSystemRenderer.material = material;
 
             MaterialPropertyBlock materialPropertyBlock = new MaterialPropertyBlock();
-            materialPropertyBlock.SetTexture("_MainTex", LocalSpriteRenderer.sprite.texture);
+            materialPropertyBlock.SetTexture("_GridTex", LocalSpriteRenderer.sprite.texture);
             materialPropertyBlock.SetInt("_SubdivisionCountX", GetSubdivisionCountX());
             materialPropertyBlock.SetInt("_SubdivisionCountY", GetSubdivisionCountY());
             materialPropertyBlock.SetFloat("_Rotation", GetMaterialRotaion());
