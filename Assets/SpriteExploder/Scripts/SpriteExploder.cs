@@ -4,9 +4,15 @@ using UnityEngine;
 
 namespace RCG.SpriteExploder
 {
+    /// <summary>
+    /// A component that will explode a sprite into an array of particles.
+    /// </summary>
     [RequireComponent(typeof(SpriteRenderer))]
     public class SpriteExploder : MonoBehaviour
     {
+        /// <summary>
+        /// The types of collision the emitting particle system can use.
+        /// </summary>
         public enum SpriteExploderCollisionMode
         {
             None,
@@ -14,6 +20,11 @@ namespace RCG.SpriteExploder
             Collision3D
         }
 
+        /// <summary>
+        /// A reference to the SpriteExploderSettings resource.
+        /// The settings are used to set performance overrides of lcoal
+        /// values when initializing the partice system.
+        /// </summary>
         SpriteExploderSettings globalSettings;
         SpriteExploderSettings GlobalSettings
         {
@@ -27,12 +38,20 @@ namespace RCG.SpriteExploder
             }
         }
 
+        /// <summary>
+        /// The size of the generated particles.
+        /// The effect essentially slices the sprite into a grid of square tiles.
+        /// Use larger values for better performance since the larger the particle tiles are,
+        /// the less that will be generated.
+        /// </summary>
         [SerializeField]
+        [Tooltip("The size of the generated particles")]
         int particlePixelSize = 8;
         public int ParticlePixelSize
         {
             get
             {
+                // Global settings will override particlePixelSize value if it is greater.
                 return Mathf.Max(GlobalSettings.MinimumParticlePixelSize, particlePixelSize);
             }
             set
@@ -41,12 +60,18 @@ namespace RCG.SpriteExploder
             }
         }
 
+        /// <summary>
+        /// The type of collision the particles will use.
+        /// Note, that global setting can be used to override the local value.
+        /// </summary>
         [SerializeField]
+        [Tooltip("The type of collision the particles will use")]
         SpriteExploderCollisionMode collisionMode = SpriteExploderCollisionMode.Collision2D;
         public SpriteExploderCollisionMode CollisionMode
         {
             get
             {
+                // If the global settings value is not collidable, then override the local value to not use collision.
                 return (GlobalSettings.IsCollidable == false) ? SpriteExploderCollisionMode.None : collisionMode;
             }
             set
@@ -55,6 +80,9 @@ namespace RCG.SpriteExploder
             }
         }
 
+        /// <summary>
+        /// Whether or not collision is enabled.
+        /// </summary>
         bool IsCollisionEnabled
         {
             get
@@ -63,7 +91,11 @@ namespace RCG.SpriteExploder
             }
         }
 
+        /// <summary>
+        /// The minimum explosive strength that will be applied to particle velocity.
+        /// </summary>
         [SerializeField]
+        [Tooltip("The minimum explosive strength that will be applied to particle velocity")]
         float minExplosiveStrength = 0.5f;
         public float MinExplosiveStrength
         {
@@ -77,7 +109,11 @@ namespace RCG.SpriteExploder
             }
         }
 
+        /// <summary>
+        /// The maximum explosive strength that will be applied to particle velocity.
+        /// </summary>
         [SerializeField]
+        [Tooltip("The maximum explosive strength that will be applied to particle velocity")]
         float maxExplosiveStrength = 2.0f;
         public float MaxExplosiveStrength
         {
@@ -91,7 +127,11 @@ namespace RCG.SpriteExploder
             }
         }
 
+        /// <summary>
+        /// The amount of gravity applied to particles.
+        /// </summary>
         [SerializeField]
+        [Tooltip("The amount of gravity applied to particles")]
         float gravityModifier = 1.0f;
         public float GravityModifier
         {
@@ -105,7 +145,11 @@ namespace RCG.SpriteExploder
             }
         }
 
+        /// <summary>
+        /// Whether or not the sprite will automatically explode on start.
+        /// </summary>
         [SerializeField]
+        [Tooltip("Whether or not the sprite will automatically explode on start")]
         bool isExplodingOnStart = false;
         public bool IsExplodingOnStart
         {
@@ -119,7 +163,11 @@ namespace RCG.SpriteExploder
             }
         }
 
+        /// <summary>
+        /// The amount of delay before the explosion occurs.
+        /// </summary>
         [SerializeField]
+        [Tooltip("The amount of delay before the explosion occurs")]
         float delaySeconds = 0.0f;
         public float DelaySeconds
         {
@@ -133,6 +181,9 @@ namespace RCG.SpriteExploder
             }
         }
 
+        /// <summary>
+        /// A reference to the local sprite renderer component.
+        /// </summary>
         SpriteRenderer localSpriteRenderer;
         SpriteRenderer LocalSpriteRenderer
         {
@@ -146,6 +197,9 @@ namespace RCG.SpriteExploder
             }
         }
 
+        /// <summary>
+        /// A reference to the local particle system.
+        /// </summary>
         ParticleSystem localParticleSystem;
         ParticleSystem LocalParticleSystem
         {
@@ -159,8 +213,16 @@ namespace RCG.SpriteExploder
             }
         }
 
+        /// <summary>
+        /// Whether or not the sprite has exploded.
+        /// </summary>
         bool hasExploded = false;
 
+        /// <summary>
+        /// Unity event function.
+        /// Initializes the particle system and explodes the sprite
+        /// if set to do so on start.
+        /// </summary>
         void Start()
         {
             InitParticleSystem();
@@ -170,86 +232,119 @@ namespace RCG.SpriteExploder
             }
         }
 
-        [ContextMenu("Explode")]
+        /// <summary>
+        /// Explodes the sprite.
+        /// </summary>
+        [ContextMenu("Explode")] // Explode can be called from the context menu in the inspector for testing purposes.
         public void Explode()
         {
 #if UNITY_EDITOR
-            if (UnityEditor.EditorApplication.isPlaying == false)
+            // Prevent the explosion from happening if called from the editor when it's not playing.
+            if (UnityEditor.EditorApplication.isPlaying == false) 
             {
                 return;
             }
 #endif
-                Explode(Vector3.zero);
+            // Explode from the center of the sprite.
+            Explode(Vector3.zero);
         }
 
+        /// <summary>
+        /// Explodes the sprite.
+        /// </summary>
+        /// <param name="explosionCenter">The center position of the explosion. Vector3.zero is the center of the sprite.</param>
         public void Explode(Vector3 explosionCenter)
         {
             StopAllCoroutines();
             StartCoroutine(ExplodeCoroutine(explosionCenter));
         }
 
+        /// <summary>
+        /// Explodes the sprite after a delay.
+        /// </summary>
+        /// <param name="explosionCenter">The center position of the explosion. Vector3.zero is the center of the sprite.</param>
+        /// <returns></returns>
         IEnumerator ExplodeCoroutine(Vector3 explosionCenter)
         {
-            yield return new WaitForSeconds(delaySeconds);
+            yield return new WaitForSeconds(delaySeconds); // Wait for delay seconds
 
+            // If the explosion has already occurred, break the coroutine.
             if (hasExploded) yield break;
             hasExploded = true;
 
+            // Disable the sprite renderer so that particle textures will be seen instead.
             LocalSpriteRenderer.enabled = false;
 
+            // Get a reference to the sprite renderer sprite and set bound size values.
             Sprite sprite = LocalSpriteRenderer.sprite;
             float boundSizeX = sprite.bounds.size.x;
             float boundSizeY = sprite.bounds.size.y;
             float halfBoundSizeX = boundSizeX * 0.5f;
             float halfBoundSizeY = boundSizeY * 0.5f;
 
+            // Set the amount of x and y subdivisions will be used. Similar to defining
+            // the size of a grid.
             int subdivisionCountX = GetSubdivisionCountX();
             int subdivisionCountY = GetSubdivisionCountY();
 
+            // Set the flip values the particles will use.
             float flipX = LocalSpriteRenderer.flipX ? -1.0f : 1.0f;
             float flipY = LocalSpriteRenderer.flipY ? -1.0f : 1.0f;
 
+            // Set the max particle size. We want the particles to be square.
+            // So, this grabs the biggest size from either the width of height values.
             float particleSizeMax = GetParticleSizeMax();
+
+            // Set the amount of particles that will generated.
             int particleCount = GetParticleCount();
 
+            // Set the base particle offset values.
             float offsetX = -halfBoundSizeX * (1.0f - (1.0f / subdivisionCountX));
             float offsetY = -halfBoundSizeY * (1.0f - (1.0f / subdivisionCountY));
 
-            int tileX = 0;
-            int tileY = 0;
+            // Define tile coordinate vars.
+            int tileX;
+            int tileY;
         
+            // Create particle emission paramaters.
             ParticleSystem.EmitParams emitParams = new ParticleSystem.EmitParams();
 
+            // Define custom particle data var.
             List<Vector4> custom1ParticleDatas = new List<Vector4>(particleCount);
 
+            // Define the base velocity var.
             Vector3 baseVelocity = Vector3.zero;
-            float baseAngularVelocity = 0.0f;
 
+            // Set base velocity values from the attached rigid body if it exists.
             Rigidbody2D rigidbody2d = GetComponent<Rigidbody2D>();
             if (rigidbody2d != null)
             {
                 Vector2 rigidbodyVelocity = rigidbody2d.velocity;
                 baseVelocity.x = rigidbodyVelocity.x;
                 baseVelocity.y = rigidbodyVelocity.y;
-
-                baseAngularVelocity = rigidbody2d.angularVelocity;
             }
 
+            // Set the local scale value.
             Vector3 localScale = transform.localScale;
 
+            // Emit all the particle tiles in a for loop.
             for (int tileIndex = 0; tileIndex < particleCount; tileIndex++)
             {
+                // Set the tile coordinates based on index and the number of subdivisions.
                 tileX = tileIndex % subdivisionCountX;
                 tileY = Mathf.FloorToInt((float)tileIndex/ subdivisionCountX);
             
+                // Set the tile position and then apply rotation to the values.
                 Vector3 localPosition = new Vector3();
                 localPosition.x = (tileX * localScale.x * particleSizeMax) + offsetX * localScale.x;
                 localPosition.y = (tileY * localScale.y * particleSizeMax) + offsetY * localScale.y;
                 localPosition = transform.rotation * localPosition;
 
+                // Set the emit params position with local position offset plus the world position.
                 Vector3 worldPosition = localPosition + transform.position;
                 emitParams.position = worldPosition;
 
+                // Set a random outward velocity to apply to the particle tile.
                 Vector3 outwardVelocity = localPosition - explosionCenter;
                 if (collisionMode == SpriteExploderCollisionMode.Collision3D)
                 {
@@ -257,12 +352,20 @@ namespace RCG.SpriteExploder
                 }
                 outwardVelocity *= Random.Range(MinExplosiveStrength, MaxExplosiveStrength);
 
+                // Set the emit params velocity with the base velocity of the rigid body plus the outward explosion velocity.
                 emitParams.velocity = baseVelocity + outwardVelocity;
+
+                // Emit the particle tile.
                 LocalParticleSystem.Emit(emitParams, 1);
 
+                // Add to the custom particle data array.
+                // This is used to pass the tile index to the shader.
+                // A Vector4 is required to pass this type of data.
+                // In this case, we only need to use the first value since we only have one index value to pass.
                 custom1ParticleDatas.Add(new Vector4(tileIndex, 0.0f, 0.0f, 0.0f));
             }
 
+            // Set the custom particle data for all the particles.
             LocalParticleSystem.SetCustomParticleData(custom1ParticleDatas, ParticleSystemCustomData.Custom1);
         }
 
