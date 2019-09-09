@@ -3,14 +3,16 @@ using UnityEngine.Events;
 
 namespace RCG.SpriteExploder.Demo
 {
+    /// <summary>
+    /// A class that triggers a collision enter Unity event when it collides
+    /// with another object.
+    /// </summary>
     public class CollisionTrigger : MonoBehaviour
     {
         [SerializeField]
         UnityEvent CollisionEnter = null;
 
-        private void Start() { }
-
-        private void OnCollisionEnter2D(Collision2D collision)
+        void OnCollisionEnter2D(Collision2D collision)
         {
             if (enabled == false) return;
 
@@ -20,7 +22,7 @@ namespace RCG.SpriteExploder.Demo
             }
         }
 
-        private void OnCollisionEnter(Collision collision)
+        void OnCollisionEnter(Collision collision)
         {
             if (enabled == false) return;
 

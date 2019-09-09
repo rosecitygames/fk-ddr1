@@ -3,18 +3,27 @@ using UnityEditor;
 
 namespace RCG.SpriteExploder.Editor
 {
+    /// <summary>
+    /// Custom editor for the sprite exploder settings.
+    /// </summary>
     [CustomEditor(typeof(SpriteExploderSettings))]
     public class SpriteExploderSettingsEditor : UnityEditor.Editor
     {
         SerializedProperty minimumParticlePixelSize;
         SerializedProperty isCollidable;
 
+        /// <summary>
+        /// Set the serialized property values from the serealized settings object.
+        /// </summary>
         void OnEnable()
         {
             minimumParticlePixelSize = serializedObject.FindProperty("minimumParticlePixelSize");
             isCollidable = serializedObject.FindProperty("isCollidable");
         }
 
+        /// <summary>
+        /// Draw the instpector GUI.
+        /// </summary>
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
@@ -23,5 +32,4 @@ namespace RCG.SpriteExploder.Editor
             serializedObject.ApplyModifiedProperties();
         }
     }
-
 }

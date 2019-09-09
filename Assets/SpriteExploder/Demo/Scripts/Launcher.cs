@@ -3,28 +3,33 @@ using UnityEngine.Events;
 
 namespace RCG.SpriteExploder.Demo
 {
+    /// <summary>
+    /// A component that launches 2D rigidbodies using physics.
+    /// </summary>
     [RequireComponent(typeof(Rigidbody2D))]
     public class Launcher : MonoBehaviour
     {
-        [SerializeField]
+        [SerializeField, Tooltip("Launch to rigidbody on start")]
         bool launchOnstart = true;
 
-        [SerializeField]
-        [Range(0.0f, 360.0f)]
+        [SerializeField, Range(0.0f, 360.0f), Tooltip("The launch angle")]
         float angle = 0.0f;
 
-        [SerializeField]
+        [SerializeField, Tooltip("The strength of the launch")]
         float strength = 1;
 
-        [SerializeField]
+        [SerializeField, Tooltip("The rotational torque (spin) of the launch")]
         float torque = 0.0f;
 
-        [SerializeField]
+        [SerializeField] // Expose unity event in the inspector to trigger other component methods.
         UnityEvent OnLaunch = null;
 
-        [SerializeField]
+        [SerializeField, Tooltip("The amount of delay before the auto start launch occurs")]
         float delaySeconds = 0.0f;
 
+        /// <summary>
+        /// The 2D force vector that will be applied to the rigidbody.
+        /// </summary>
         Vector2 Force
         {
             get
@@ -37,31 +42,38 @@ namespace RCG.SpriteExploder.Demo
 
         private void Start()
         {
+            // Disable the rigidbody simulation until launch is called.
             Rigidbody2D rigidbody = GetComponent<Rigidbody2D>();
             rigidbody.simulated = false;
 
+            // Invoke the launch method with delay
             if (launchOnstart)
             {
                 Invoke("Launch", delaySeconds);
             }
         }
 
-        [ContextMenu("Launch")]
+        /// <summary>
+        /// Launches the rigidbody.
+        /// </summary>
+        [ContextMenu("Launch")] // Accesible from context menu for testing in the editor.
         public void Launch()
         {
+            // Enable the rigidbody simulation
             Rigidbody2D rigidbody = GetComponent<Rigidbody2D>();
             rigidbody.simulated = true;
 
+            // Apply physics to the rigidbody
             rigidbody.AddForce(Force, ForceMode2D.Impulse);
             rigidbody.AddTorque(torque, ForceMode2D.Impulse);
 
-            if (OnLaunch != null)
-            {
-                OnLaunch.Invoke();
-            }
+            // Invoke any Unity Events
+            OnLaunch?.Invoke();
         }
 
-
+        /// <summary>
+        /// Draw a simple inspector gizmo that shows the launch angle.
+        /// </summary>
         private void OnDrawGizmos()
         {
             Vector3 position = transform.position;
@@ -72,6 +84,5 @@ namespace RCG.SpriteExploder.Demo
             Gizmos.color = Color.blue;
             Gizmos.DrawLine(position, forcePosition);
         }
-
     }
 }

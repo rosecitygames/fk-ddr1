@@ -1,21 +1,19 @@
-﻿using UnityEngine;
-using UnityEditor;
-using UnityEditor.Presets;
+﻿using UnityEditor;
+using UnityEngine;
 
 namespace RCG.SpriteExploder.Editor
 {
+    /// <summary>
+    /// The editor window for the sprite exploder settings.
+    /// </summary>
     public class SpriteExploderEditorWindow : EditorWindow
-
     {
-        private static class Styles
-        {
-            public static GUIContent presetIcon = EditorGUIUtility.IconContent("Preset.Context");
-            public static GUIStyle iconButton = new GUIStyle("IconButton");
-        }
-
+        // An instance of the sprite exploder settings editor.
         UnityEditor.Editor settingsEditor;
 
-        SpriteExploderSettings serializedSettings;
+        /// <summary>
+        /// A reference to the settings scriptable object resource.
+        /// </summary>
         SpriteExploderSettings SerializedSettings
         {
             get
@@ -27,7 +25,11 @@ namespace RCG.SpriteExploder.Editor
                 return serializedSettings;
             }
         }
+        SpriteExploderSettings serializedSettings;
 
+        /// <summary>
+        /// Helper method to get a referece to the editor window.
+        /// </summary>
         [MenuItem("Edit/Sprite Exploder Settings...")]
         static void OpenWindow()
         {
@@ -35,20 +37,28 @@ namespace RCG.SpriteExploder.Editor
             window.titleContent = new GUIContent("Sprite Exploder Settings");
         }
 
+        /// <summary>
+        /// Creates an instance of the settings editor from the serialized settings. 
+        /// </summary>
         void OnEnable()
         {
             settingsEditor = UnityEditor.Editor.CreateEditor(SerializedSettings);
         }
 
+        /// <summary>
+        /// Destroy the settings editor instance when the editor window is disabled.
+        /// </summary>
         void OnDisable()
         {
             DestroyImmediate(settingsEditor);
         }
 
+        /// <summary>
+        /// Draw the editor GUI.
+        /// </summary>
         void OnGUI()
         {
             EditorGUILayout.Space();
-
             EditorGUI.BeginChangeCheck();
             settingsEditor.OnInspectorGUI();
         }

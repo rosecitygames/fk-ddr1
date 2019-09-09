@@ -9,23 +9,12 @@ namespace RCG.SpriteExploder
     /// </summary>
     [RequireComponent(typeof(SpriteRenderer))]
     public class SpriteExploder : MonoBehaviour
-    {
-        /// <summary>
-        /// The types of collision the emitting particle system can use.
-        /// </summary>
-        public enum SpriteExploderCollisionMode
-        {
-            None,
-            Collision2D,
-            Collision3D
-        }
-
+    {   
         /// <summary>
         /// A reference to the SpriteExploderSettings resource.
         /// The settings are used to set performance overrides of lcoal
         /// values when initializing the partice system.
         /// </summary>
-        SpriteExploderSettings globalSettings;
         SpriteExploderSettings GlobalSettings
         {
             get
@@ -37,6 +26,7 @@ namespace RCG.SpriteExploder
                 return globalSettings;
             }
         }
+        SpriteExploderSettings globalSettings;
 
         /// <summary>
         /// The size of the generated particles.
@@ -44,9 +34,6 @@ namespace RCG.SpriteExploder
         /// Use larger values for better performance since the larger the particle tiles are,
         /// the less that will be generated.
         /// </summary>
-        [SerializeField]
-        [Tooltip("The size of the generated particles")]
-        int particlePixelSize = 8;
         public int ParticlePixelSize
         {
             get
@@ -59,14 +46,13 @@ namespace RCG.SpriteExploder
                 particlePixelSize = value;
             }
         }
+        [SerializeField, Tooltip("The size of the generated particles")]
+        int particlePixelSize = 8;
 
         /// <summary>
         /// The type of collision the particles will use.
         /// Note, that global setting can be used to override the local value.
         /// </summary>
-        [SerializeField]
-        [Tooltip("The type of collision the particles will use")]
-        SpriteExploderCollisionMode collisionMode = SpriteExploderCollisionMode.Collision2D;
         public SpriteExploderCollisionMode CollisionMode
         {
             get
@@ -79,6 +65,8 @@ namespace RCG.SpriteExploder
                 collisionMode = value;
             }
         }
+        [SerializeField, Tooltip("The type of collision the particles will use")]
+        SpriteExploderCollisionMode collisionMode = SpriteExploderCollisionMode.Collision2D;
 
         /// <summary>
         /// Whether or not collision is enabled.
@@ -93,10 +81,7 @@ namespace RCG.SpriteExploder
 
         /// <summary>
         /// The minimum explosive strength that will be applied to particle velocity.
-        /// </summary>
-        [SerializeField]
-        [Tooltip("The minimum explosive strength that will be applied to particle velocity")]
-        float minExplosiveStrength = 0.5f;
+        /// </summary>    
         public float MinExplosiveStrength
         {
             get
@@ -108,13 +93,12 @@ namespace RCG.SpriteExploder
                 minExplosiveStrength = value;
             }
         }
+        [SerializeField, Tooltip("The minimum explosive strength that will be applied to particle velocity")]
+        float minExplosiveStrength = 0.5f;
 
         /// <summary>
         /// The maximum explosive strength that will be applied to particle velocity.
-        /// </summary>
-        [SerializeField]
-        [Tooltip("The maximum explosive strength that will be applied to particle velocity")]
-        float maxExplosiveStrength = 2.0f;
+        /// </summary>    
         public float MaxExplosiveStrength
         {
             get
@@ -126,13 +110,13 @@ namespace RCG.SpriteExploder
                 maxExplosiveStrength = value;
             }
         }
+        [SerializeField]
+        [Tooltip("The maximum explosive strength that will be applied to particle velocity")]
+        float maxExplosiveStrength = 2.0f;
 
         /// <summary>
         /// The amount of gravity applied to particles.
-        /// </summary>
-        [SerializeField]
-        [Tooltip("The amount of gravity applied to particles")]
-        float gravityModifier = 1.0f;
+        /// </summary>    
         public float GravityModifier
         {
             get
@@ -144,13 +128,12 @@ namespace RCG.SpriteExploder
                 gravityModifier = value;
             }
         }
+        [SerializeField, Tooltip("The amount of gravity applied to particles")]
+        float gravityModifier = 1.0f;
 
         /// <summary>
         /// Whether or not the sprite will automatically explode on start.
-        /// </summary>
-        [SerializeField]
-        [Tooltip("Whether or not the sprite will automatically explode on start")]
-        bool isExplodingOnStart = false;
+        /// </summary>    
         public bool IsExplodingOnStart
         {
             get
@@ -162,13 +145,12 @@ namespace RCG.SpriteExploder
                 isExplodingOnStart = value;
             }
         }
+        [SerializeField, Tooltip("Whether or not the sprite will automatically explode on start")]
+        bool isExplodingOnStart = false;
 
         /// <summary>
         /// The amount of delay before the explosion occurs.
-        /// </summary>
-        [SerializeField]
-        [Tooltip("The amount of delay before the explosion occurs")]
-        float delaySeconds = 0.0f;
+        /// </summary>    
         public float DelaySeconds
         {
             get
@@ -180,11 +162,12 @@ namespace RCG.SpriteExploder
                 delaySeconds = value;
             }
         }
+        [SerializeField, Tooltip("The amount of delay before the explosion occurs")]
+        float delaySeconds = 0.0f;
 
         /// <summary>
         /// A reference to the local sprite renderer component.
-        /// </summary>
-        SpriteRenderer localSpriteRenderer;
+        /// </summary>   
         SpriteRenderer LocalSpriteRenderer
         {
             get
@@ -196,11 +179,11 @@ namespace RCG.SpriteExploder
                 return localSpriteRenderer;
             }
         }
+        SpriteRenderer localSpriteRenderer;
 
         /// <summary>
         /// A reference to the local particle system.
         /// </summary>
-        ParticleSystem localParticleSystem;
         ParticleSystem LocalParticleSystem
         {
             get
@@ -212,6 +195,7 @@ namespace RCG.SpriteExploder
                 return localParticleSystem;
             }
         }
+        ParticleSystem localParticleSystem;
 
         /// <summary>
         /// Whether or not the sprite has exploded.
@@ -369,6 +353,7 @@ namespace RCG.SpriteExploder
             LocalParticleSystem.SetCustomParticleData(custom1ParticleDatas, ParticleSystemCustomData.Custom1);
         }
 
+        // Particle system default consts
         const float defaultStartLifetime = 10.0f;
         const float defaultMinDampen = 0.2f;
         const float defaultMaxDampen = 0.2f;
@@ -376,10 +361,17 @@ namespace RCG.SpriteExploder
         const float defaultMaxBounce = 0.9f;
         const float defaultLifetimeLoss = 0.1f;
 
+        // Material resource path
         const string materialResourcePath = "Materials/SpriteTileGridMaterial";
 
+        /// <summary>
+        /// Initialize the particle system. Any existing particle system on the
+        /// game object will be modified to be compatible with the tile grid material.
+        /// If no particle system exists, then one will be created.
+        /// </summary>
         void InitParticleSystem()
         {
+            // Get the local particle system or create one if it doesn't exist.
             localParticleSystem = GetComponent<ParticleSystem>();
             bool hasLocalParticleSytem = localParticleSystem != null;
             if (hasLocalParticleSytem == false)
@@ -387,8 +379,10 @@ namespace RCG.SpriteExploder
                 localParticleSystem = gameObject.AddComponent<ParticleSystem>();
             }
 
+            // Stop the particle system before modifying its modules.
             LocalParticleSystem.Stop();
 
+            // Modify the main module.
             ParticleSystem.MainModule main = LocalParticleSystem.main;
             main.playOnAwake = false;
             main.startLifetime = hasLocalParticleSytem ? main.startLifetime : defaultStartLifetime;
@@ -400,12 +394,17 @@ namespace RCG.SpriteExploder
             main.simulationSpace = ParticleSystemSimulationSpace.World;
             main.gravityModifier = GravityModifier;
 
+            // Modify the emission module to be disabled since we'll manually be emitting particles.
             ParticleSystem.EmissionModule emission = LocalParticleSystem.emission;
             emission.enabled = false;
 
+            // Modify the shape module so that it's disabled. We'll be manually be emitting the particles
+            // at specific locations.
             ParticleSystem.ShapeModule shape = LocalParticleSystem.shape;
             shape.enabled = false;
 
+            // Modify the collision module. Some properties retain their original settings
+            // if a prexisting component existed. Otherwise, use default values.
             ParticleSystem.CollisionModule collision = LocalParticleSystem.collision;
             collision.enabled = IsCollisionEnabled;
             collision.type = ParticleSystemCollisionType.World;
@@ -414,6 +413,8 @@ namespace RCG.SpriteExploder
             collision.bounce = hasLocalParticleSytem ? collision.bounce : new ParticleSystem.MinMaxCurve(defaultMinBounce, defaultMaxBounce);
             collision.lifetimeLoss = hasLocalParticleSytem ? collision.lifetimeLoss : defaultLifetimeLoss;
 
+            // Modify the particle system renderer component. In particular, setting the material,
+            // enabling gpu instancing, and setting the active vertex streams.
             ParticleSystemRenderer particleSystemRenderer = GetComponent<ParticleSystemRenderer>();
             particleSystemRenderer.renderMode = ParticleSystemRenderMode.Mesh;
             particleSystemRenderer.mesh = Resources.GetBuiltinResource<Mesh>("Quad.fbx");
@@ -436,56 +437,91 @@ namespace RCG.SpriteExploder
             streams.Add(ParticleSystemVertexStream.Position);
             streams.Add(ParticleSystemVertexStream.UV);
             streams.Add(ParticleSystemVertexStream.Color);
-            streams.Add(ParticleSystemVertexStream.Custom1X);
+            streams.Add(ParticleSystemVertexStream.Custom1X); // Used to pass tile data to the shader
 
             particleSystemRenderer.SetActiveVertexStreams(streams);
 
+            // Play the particle system now that the modules and renderer are setup.
             LocalParticleSystem.Play();
         }
 
+        /// <summary>
+        /// Helper method to get the horizontal tile subdivisions count.
+        /// </summary>
         int GetSubdivisionCountX()
         {
             float spriteSizeX = LocalSpriteRenderer.sprite.bounds.size.x * LocalSpriteRenderer.sprite.pixelsPerUnit;
             return Mathf.CeilToInt(spriteSizeX / ParticlePixelSize); 
         }
 
+        /// <summary>
+        /// Helper method to get the vertical tile subdivisions count.
+        /// </summary>
         int GetSubdivisionCountY()
         {
             float spriteSizeY = LocalSpriteRenderer.sprite.bounds.size.y * LocalSpriteRenderer.sprite.pixelsPerUnit;
             return Mathf.CeilToInt(spriteSizeY / ParticlePixelSize);
         }
 
+        /// <summary>
+        /// Helper method to get the total particle count.
+        /// </summary>
         int GetParticleCount()
         {
             return GetSubdivisionCountX() * GetSubdivisionCountY();
         }
 
+        /// <summary>
+        /// Helper method to get the max particle size between horizontal and vertical subdivisions.
+        /// </summary>
         float GetParticleSizeMax()
         {
             return Mathf.Max(GetParticleSizeX(), GetParticleSizeY());
         }
 
+        /// <summary>
+        /// Helper method to get the horizontal particle (tile) count.
+        /// </summary>
         float GetParticleSizeX()
         {
             return LocalSpriteRenderer.sprite.bounds.size.x / GetSubdivisionCountX();
         }
 
+        /// <summary>
+        /// Helper method to get the vertical particle (tile) count.
+        /// </summary>
         float GetParticleSizeY()
         {
             return LocalSpriteRenderer.sprite.bounds.size.y / GetSubdivisionCountY();
         }
 
+        /// <summary>
+        /// Helper method to get the material rotation.
+        /// </summary>
         float GetMaterialRotaion()
         {
             return Mathf.Deg2Rad * -transform.eulerAngles.z;
         }
 
+        /// <summary>
+        /// Helper method to get the flip vector  
+        /// </summary>
         Vector4 GetFlipVector()
         {
             Vector4 flip = new Vector4();
             flip.x = LocalSpriteRenderer.flipX ? -1.0f : 1.0f;
             flip.y = LocalSpriteRenderer.flipY ? -1.0f : 1.0f;
             return flip;
+        }
+
+        /// <summary>
+        /// The types of collision the emitting particle system can use.
+        /// </summary>
+        public enum SpriteExploderCollisionMode
+        {
+            None,
+            Collision2D,
+            Collision3D
         }
     }
 }
