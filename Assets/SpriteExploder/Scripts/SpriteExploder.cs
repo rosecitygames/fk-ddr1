@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace RCG.SpriteExploder
+namespace IndieDeveloperTools.SpriteExploder
 {
     /// <summary>
     /// A component that will explode a sprite into an array of particles.

@@ -1,7 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-namespace RCG.SpriteExploder.Editor
+namespace IndieDeveloperTools.SpriteExploder.Editor
 {
     /// <summary>
     /// The editor window for the sprite exploder settings.

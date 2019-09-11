@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
 
-namespace RCG.SpriteExploder.Demo
+namespace IndieDeveloperTools.SpriteExploder.Demo
 {
     /// <summary>
     /// A class that triggers a collision enter Unity event when it collides

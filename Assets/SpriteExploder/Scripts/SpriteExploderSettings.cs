@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace RCG.SpriteExploder
+namespace IndieDeveloperTools.SpriteExploder
 {
     /// <summary>
     /// Sprite exploder settings that globally override component properties.

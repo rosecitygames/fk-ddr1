@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace RCG.SpriteExploder.Demo
+namespace IndieDeveloperTools.SpriteExploder.Demo
 {
     /// <summary>
     /// A class the calls the Explode method on a Sprite Exploder component
