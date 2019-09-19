@@ -1,15 +1,21 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace IndieDeveloperTools.SpriteExploder
+namespace IndieDevTools.SpriteExploder
 {
     /// <summary>
     /// A component that will explode a sprite into an array of particles.
     /// </summary>
     [RequireComponent(typeof(SpriteRenderer))]
     public class SpriteExploder : MonoBehaviour
-    {   
+    {
+        /// <summary>
+        /// An event that gets triggered when the sprite explodes.
+        /// </summary>
+        public event Action OnExploded;
+
         /// <summary>
         /// A reference to the SpriteExploderSettings resource.
         /// The settings are used to set performance overrides of lcoal
@@ -182,6 +188,21 @@ namespace IndieDeveloperTools.SpriteExploder
         SpriteRenderer localSpriteRenderer;
 
         /// <summary>
+        /// Gets the particles of this Particle System.
+        /// </summary>
+        /// <param name="particles">Output particle buffer, containing the current particle state.</param>
+        /// <returns>The number of particles written to the input particle array (the number of particles currently alive).</returns>
+        public int GetParticles(ParticleSystem.Particle[] particles)
+        {
+            if (hasExploded)
+            {
+                return LocalParticleSystem.GetParticles(particles);
+            }
+
+            return 0;
+        }
+
+        /// <summary>
         /// A reference to the local particle system.
         /// </summary>
         ParticleSystem LocalParticleSystem
@@ -224,7 +245,7 @@ namespace IndieDeveloperTools.SpriteExploder
         {
 #if UNITY_EDITOR
             // Prevent the explosion from happening if called from the editor when it's not playing.
-            if (UnityEditor.EditorApplication.isPlaying == false) 
+            if (UnityEditor.EditorApplication.isPlaying == false)
             {
                 return;
             }
@@ -289,7 +310,7 @@ namespace IndieDeveloperTools.SpriteExploder
             // Define tile coordinate vars.
             int tileX;
             int tileY;
-        
+
             // Create particle emission paramaters.
             ParticleSystem.EmitParams emitParams = new ParticleSystem.EmitParams();
 
@@ -316,8 +337,8 @@ namespace IndieDeveloperTools.SpriteExploder
             {
                 // Set the tile coordinates based on index and the number of subdivisions.
                 tileX = tileIndex % subdivisionCountX;
-                tileY = Mathf.FloorToInt((float)tileIndex/ subdivisionCountX);
-            
+                tileY = Mathf.FloorToInt((float)tileIndex / subdivisionCountX);
+
                 // Set the tile position and then apply rotation to the values.
                 Vector3 localPosition = new Vector3();
                 localPosition.x = (tileX * localScale.x * particleSizeMax) + offsetX * localScale.x;
@@ -332,9 +353,9 @@ namespace IndieDeveloperTools.SpriteExploder
                 Vector3 outwardVelocity = localPosition - explosionCenter;
                 if (collisionMode == SpriteExploderCollisionMode.Collision3D)
                 {
-                    outwardVelocity.z = Random.Range(-halfBoundSizeX * 0.5f, halfBoundSizeX * 0.5f);
+                    outwardVelocity.z = UnityEngine.Random.Range(-halfBoundSizeX * 0.5f, halfBoundSizeX * 0.5f);
                 }
-                outwardVelocity *= Random.Range(MinExplosiveStrength, MaxExplosiveStrength);
+                outwardVelocity *= UnityEngine.Random.Range(MinExplosiveStrength, MaxExplosiveStrength);
 
                 // Set the emit params velocity with the base velocity of the rigid body plus the outward explosion velocity.
                 emitParams.velocity = baseVelocity + outwardVelocity;
@@ -351,6 +372,9 @@ namespace IndieDeveloperTools.SpriteExploder
 
             // Set the custom particle data for all the particles.
             LocalParticleSystem.SetCustomParticleData(custom1ParticleDatas, ParticleSystemCustomData.Custom1);
+
+            // Invoke exploded event
+            OnExploded?.Invoke();
         }
 
         // Particle system default consts
@@ -451,7 +475,7 @@ namespace IndieDeveloperTools.SpriteExploder
         int GetSubdivisionCountX()
         {
             float spriteSizeX = LocalSpriteRenderer.sprite.bounds.size.x * LocalSpriteRenderer.sprite.pixelsPerUnit;
-            return Mathf.CeilToInt(spriteSizeX / ParticlePixelSize); 
+            return Mathf.CeilToInt(spriteSizeX / ParticlePixelSize);
         }
 
         /// <summary>

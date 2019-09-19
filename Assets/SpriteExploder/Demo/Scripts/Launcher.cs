@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
 
-namespace IndieDeveloperTools.SpriteExploder.Demo
+namespace IndieDevTools.SpriteExploder.Demo
 {
     /// <summary>
     /// A component that launches 2D rigidbodies using physics.

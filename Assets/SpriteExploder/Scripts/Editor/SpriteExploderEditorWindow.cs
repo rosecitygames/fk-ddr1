@@ -1,7 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-namespace IndieDeveloperTools.SpriteExploder.Editor
+namespace IndieDevTools.SpriteExploder.Editor
 {
     /// <summary>
     /// The editor window for the sprite exploder settings.
