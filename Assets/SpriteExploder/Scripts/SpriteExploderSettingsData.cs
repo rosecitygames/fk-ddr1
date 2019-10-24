@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace IndieDevTools.SpriteExploder
+namespace IndieDevTools.Exploders
 {
     /// <summary>
     /// Serialized settings data used by the SpriteExploderSettings

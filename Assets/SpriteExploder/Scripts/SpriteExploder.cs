@@ -3,10 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace IndieDevTools.SpriteExploder
+namespace IndieDevTools.Exploders
 {
     /// <summary>
-    /// A component that will explode a sprite into an array of particles.
+    /// A component that explodes a sprite into an array of particles.
     /// </summary>
     [RequireComponent(typeof(SpriteRenderer))]
     public class SpriteExploder : MonoBehaviour
@@ -33,6 +33,17 @@ namespace IndieDevTools.SpriteExploder
             }
         }
         SpriteExploderSettings globalSettings;
+
+        /// <summary>
+        /// The minimum particle pixel size possible.
+        /// </summary>
+        public int MinParticlePixelSize
+        {
+            get
+            {
+                return GlobalSettings.MinimumParticlePixelSize;
+            }
+        }
 
         /// <summary>
         /// The size of the generated particles.
@@ -194,9 +205,24 @@ namespace IndieDevTools.SpriteExploder
         /// <returns>The number of particles written to the input particle array (the number of particles currently alive).</returns>
         public int GetParticles(ParticleSystem.Particle[] particles)
         {
-            if (hasExploded)
+            if (isExploded)
             {
                 return LocalParticleSystem.GetParticles(particles);
+            }
+
+            return 0;
+        }
+
+        /// <summary>
+        /// Gets the stream of custom per-particle data.
+        /// </summary>
+        /// <param name="customDatas">The array of per-particle data.</param>
+        /// <returns>The processed array of per-particle data.</returns>
+        public int GetCustomParticleData(List<Vector4> customDatas)
+        {
+            if (isExploded)
+            {
+                return LocalParticleSystem.GetCustomParticleData(customDatas, ParticleSystemCustomData.Custom1);
             }
 
             return 0;
@@ -221,8 +247,9 @@ namespace IndieDevTools.SpriteExploder
         /// <summary>
         /// Whether or not the sprite has exploded.
         /// </summary>
-        bool hasExploded = false;
-
+        public bool IsExploded => isExploded;
+        bool isExploded = false;
+        
         /// <summary>
         /// Unity event function.
         /// Initializes the particle system and explodes the sprite
@@ -245,7 +272,7 @@ namespace IndieDevTools.SpriteExploder
         {
 #if UNITY_EDITOR
             // Prevent the explosion from happening if called from the editor when it's not playing.
-            if (UnityEditor.EditorApplication.isPlaying == false)
+            if (UnityEditor.EditorApplication.isPlaying == false) 
             {
                 return;
             }
@@ -274,8 +301,22 @@ namespace IndieDevTools.SpriteExploder
             yield return new WaitForSeconds(delaySeconds); // Wait for delay seconds
 
             // If the explosion has already occurred, break the coroutine.
-            if (hasExploded) yield break;
-            hasExploded = true;
+            if (isExploded) yield break;
+            isExploded = true;
+
+            // If the max particle count is only one, then complete explosion.
+            int maxParticleCount = GetMaxParticleCount();
+            if (maxParticleCount <= 1)
+            {
+                LocalSpriteRenderer.enabled = false;
+                OnExploded?.Invoke();
+                yield break;
+            }
+
+            // Set the amount of x and y subdivisions will be used. Similar to defining
+            // the size of a grid.
+            int subdivisionCountX = GetSubdivisionCountX();
+            int subdivisionCountY = GetSubdivisionCountY();
 
             // Disable the sprite renderer so that particle textures will be seen instead.
             LocalSpriteRenderer.enabled = false;
@@ -287,21 +328,16 @@ namespace IndieDevTools.SpriteExploder
             float halfBoundSizeX = boundSizeX * 0.5f;
             float halfBoundSizeY = boundSizeY * 0.5f;
 
-            // Set the amount of x and y subdivisions will be used. Similar to defining
-            // the size of a grid.
-            int subdivisionCountX = GetSubdivisionCountX();
-            int subdivisionCountY = GetSubdivisionCountY();
-
             // Set the flip values the particles will use.
             float flipX = LocalSpriteRenderer.flipX ? -1.0f : 1.0f;
             float flipY = LocalSpriteRenderer.flipY ? -1.0f : 1.0f;
 
             // Set the max particle size. We want the particles to be square.
             // So, this grabs the biggest size from either the width of height values.
-            float particleSizeMax = GetParticleSizeMax();
+            float particleSizeMax = GetMaxParticleSize();
 
             // Set the amount of particles that will generated.
-            int particleCount = GetParticleCount();
+            int particleCount = GetMaxParticleCount();
 
             // Set the base particle offset values.
             float offsetX = -halfBoundSizeX * (1.0f - (1.0f / subdivisionCountX));
@@ -310,7 +346,7 @@ namespace IndieDevTools.SpriteExploder
             // Define tile coordinate vars.
             int tileX;
             int tileY;
-
+        
             // Create particle emission paramaters.
             ParticleSystem.EmitParams emitParams = new ParticleSystem.EmitParams();
 
@@ -330,19 +366,19 @@ namespace IndieDevTools.SpriteExploder
             }
 
             // Set the local scale value.
-            Vector3 localScale = transform.localScale;
+            Vector3 lossyScale = transform.lossyScale;
 
             // Emit all the particle tiles in a for loop.
             for (int tileIndex = 0; tileIndex < particleCount; tileIndex++)
             {
                 // Set the tile coordinates based on index and the number of subdivisions.
-                tileX = tileIndex % subdivisionCountX;
-                tileY = Mathf.FloorToInt((float)tileIndex / subdivisionCountX);
-
+                tileX = GetTileX(tileIndex, subdivisionCountX);
+                tileY = GetTileY(tileIndex, subdivisionCountY);
+            
                 // Set the tile position and then apply rotation to the values.
                 Vector3 localPosition = new Vector3();
-                localPosition.x = (tileX * localScale.x * particleSizeMax) + offsetX * localScale.x;
-                localPosition.y = (tileY * localScale.y * particleSizeMax) + offsetY * localScale.y;
+                localPosition.x = (tileX * lossyScale.x * particleSizeMax) + offsetX * lossyScale.x;
+                localPosition.y = (tileY * lossyScale.y * particleSizeMax) + offsetY * lossyScale.y;
                 localPosition = transform.rotation * localPosition;
 
                 // Set the emit params position with local position offset plus the world position.
@@ -412,9 +448,9 @@ namespace IndieDevTools.SpriteExploder
             main.startLifetime = hasLocalParticleSytem ? main.startLifetime : defaultStartLifetime;
             main.duration = main.startLifetime.constantMax;
             main.loop = false;
-            main.startSize = GetParticleSizeMax();
-            main.startColor = LocalSpriteRenderer.color;
-            main.maxParticles = GetParticleCount();
+            main.startSize = GetMaxParticleSize() * GetParticleSystemScale();
+            main.startColor = hasLocalParticleSytem ? main.startColor : LocalSpriteRenderer.color;
+            main.maxParticles = GetMaxParticleCount();
             main.simulationSpace = ParticleSystemSimulationSpace.World;
             main.gravityModifier = GravityModifier;
 
@@ -450,11 +486,11 @@ namespace IndieDevTools.SpriteExploder
             particleSystemRenderer.material = material;
 
             MaterialPropertyBlock materialPropertyBlock = new MaterialPropertyBlock();
-            materialPropertyBlock.SetTexture("_GridTex", LocalSpriteRenderer.sprite.texture);
+            materialPropertyBlock.SetTexture("_GridTex", GetTexture());
             materialPropertyBlock.SetInt("_SubdivisionCountX", GetSubdivisionCountX());
             materialPropertyBlock.SetInt("_SubdivisionCountY", GetSubdivisionCountY());
             materialPropertyBlock.SetFloat("_Rotation", GetMaterialRotaion());
-            materialPropertyBlock.SetVector("_Flip", GetFlipVector());
+            materialPropertyBlock.SetVector("_Flip", GetFlipVector4());
             particleSystemRenderer.SetPropertyBlock(materialPropertyBlock);
 
             List<ParticleSystemVertexStream> streams = new List<ParticleSystemVertexStream>();
@@ -469,36 +505,93 @@ namespace IndieDevTools.SpriteExploder
             LocalParticleSystem.Play();
         }
 
-        /// <summary>
-        /// Helper method to get the horizontal tile subdivisions count.
-        /// </summary>
-        int GetSubdivisionCountX()
+        public ParticleSystem GetParticleSystem()
         {
-            float spriteSizeX = LocalSpriteRenderer.sprite.bounds.size.x * LocalSpriteRenderer.sprite.pixelsPerUnit;
-            return Mathf.CeilToInt(spriteSizeX / ParticlePixelSize);
+            return LocalParticleSystem;
+        }
+
+        public Texture2D GetTexture()
+        {
+            return LocalSpriteRenderer.sprite.texture;
+        }
+
+        public int GetParticleCount()
+        {
+            return LocalParticleSystem.particleCount;
         }
 
         /// <summary>
-        /// Helper method to get the vertical tile subdivisions count.
+        /// Helper method to get the max particle count.
         /// </summary>
-        int GetSubdivisionCountY()
-        {
-            float spriteSizeY = LocalSpriteRenderer.sprite.bounds.size.y * LocalSpriteRenderer.sprite.pixelsPerUnit;
-            return Mathf.CeilToInt(spriteSizeY / ParticlePixelSize);
-        }
-
-        /// <summary>
-        /// Helper method to get the total particle count.
-        /// </summary>
-        int GetParticleCount()
+        public int GetMaxParticleCount()
         {
             return GetSubdivisionCountX() * GetSubdivisionCountY();
         }
 
         /// <summary>
+        /// Helper method to get the x tile position value of a particle.
+        /// </summary>
+        /// <param name="tileIndex">Index value of the particle tile</param>
+        /// <param name="subdivisionCountX">The amount of horizatonal subdivisions</param>
+        /// <returns>The x tile position value of a particle</returns>
+        public int GetTileX(int tileIndex, int subdivisionCountX)
+        {
+            return tileIndex % subdivisionCountX;
+        }
+
+        /// <summary>
+        /// Helper method to get the y tile position value of a particle.
+        /// </summary>
+        /// <param name="tileIndex">Index value of the particle tile</param>
+        /// <param name="subdivisionCountX">The amount of vertical subdivisions</param>
+        /// <returns>The y tile position value of a particle</returns>
+        public int GetTileY(int tileIndex, int subdivisionCountX)
+        {
+            return Mathf.FloorToInt((float)tileIndex / subdivisionCountX);
+        }
+
+        /// <summary>
+        /// Helper method to get the horizontal tile subdivisions count.
+        /// </summary>
+        public int GetSubdivisionCountX()
+        {
+            float spriteSizeX = LocalSpriteRenderer.sprite.bounds.size.x * LocalSpriteRenderer.sprite.pixelsPerUnit * transform.lossyScale.x;
+            return Mathf.CeilToInt(spriteSizeX / ParticlePixelSize); 
+        }
+
+        /// <summary>
+        /// Helper method to get the vertical tile subdivisions count.
+        /// </summary>
+        public int GetSubdivisionCountY()
+        {
+            float spriteSizeY = LocalSpriteRenderer.sprite.bounds.size.y * LocalSpriteRenderer.sprite.pixelsPerUnit * transform.lossyScale.y;
+            return Mathf.CeilToInt(spriteSizeY / ParticlePixelSize);
+        } 
+
+        /// <summary>
+        /// Helper method to get the world particle scale. 
+        /// </summary>
+        /// <returns>The particle scale relative to the world.</returns>
+        public Vector2 GetParticleScale()
+        {
+            float maxBound = Mathf.Max(LocalSpriteRenderer.sprite.bounds.size.x, LocalSpriteRenderer.sprite.bounds.size.y);
+            float scale = GetMaxParticleSize() / maxBound;
+            return new Vector2(scale * transform.lossyScale.x, scale * transform.lossyScale.y);
+        }
+
+        /// <summary>
+        /// Helper method to get the particle scale relative to the component scale.
+        /// </summary>
+        /// <returns>The particle scale relative the Sprite Exploder scale.</returns>
+        public float GetParticleSystemScale()
+        {
+            return Mathf.Max(transform.lossyScale.x / transform.localScale.x, transform.lossyScale.y / transform.localScale.y);
+        }
+
+        /// <summary>
         /// Helper method to get the max particle size between horizontal and vertical subdivisions.
         /// </summary>
-        float GetParticleSizeMax()
+        public float GetMaxParticleSize()
         {
             return Mathf.Max(GetParticleSizeX(), GetParticleSizeY());
         }
@@ -528,11 +621,22 @@ namespace IndieDevTools.SpriteExploder
         }
 
         /// <summary>
-        /// Helper method to get the flip vector  
+        /// Helper method to get the flip values as a Vector4.  
         /// </summary>
-        Vector4 GetFlipVector()
+        Vector4 GetFlipVector4()
         {
             Vector4 flip = new Vector4();
+            flip.x = LocalSpriteRenderer.flipX ? -1.0f : 1.0f;
+            flip.y = LocalSpriteRenderer.flipY ? -1.0f : 1.0f;
+            return flip;
+        }
+
+        /// <summary>
+        /// Helper method to get the flip values as a Vector2.  
+        /// </summary>
+        public Vector2 GetFlipVector2()
+        {
+            Vector2 flip = new Vector2();
             flip.x = LocalSpriteRenderer.flipX ? -1.0f : 1.0f;
             flip.y = LocalSpriteRenderer.flipY ? -1.0f : 1.0f;
             return flip;

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
 
-namespace IndieDevTools.SpriteExploder.Demo
+namespace IndieDevTools.Exploders.Demo
 {
     /// <summary>
     /// A class that triggers a collision enter Unity event when it collides
@@ -11,6 +11,14 @@ namespace IndieDevTools.SpriteExploder.Demo
     {
         [SerializeField]
         UnityEvent CollisionEnter = null;
+
+        [SerializeField]
+        bool isEnabledOnAwake = false;
+
+        void Awake()
+        {
+            enabled = isEnabledOnAwake;
+        }
 
         void OnCollisionEnter2D(Collision2D collision)
         {

@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace IndieDevTools.SpriteExploder
+namespace IndieDevTools.Exploders
 {
     /// <summary>
     /// Sprite exploder settings that globally override component properties.
